@@ -26,7 +26,7 @@ class AuthController {
              );
              res.json({
                 message: "Login successful",
-                data: user,
+                user,
              })
         } catch (error) {
             console.error("Login error:", error);
