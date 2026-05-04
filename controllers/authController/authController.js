@@ -21,7 +21,7 @@ class AuthController {
                     httpOnly: true,
                     secure: false,
                     sameSite: 'Strict',
-                    maxAge: 1000 * 60 * 60
+                    maxAge: 1000 * 60 * 60 * 24 * 7
                 }
              );
              res.json({

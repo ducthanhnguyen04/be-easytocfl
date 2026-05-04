@@ -32,6 +32,10 @@ module.exports = {
         type: Sequelize.ENUM('user', 'admin'),
         defaultValue: 'user'
       },
+      isPremium: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       lastLogin: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
