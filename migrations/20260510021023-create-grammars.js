@@ -2,20 +2,37 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Levels', {
+    await queryInterface.createTable('Grammars', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      levelName: {
+      grammar: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      level: {
+      structure: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      usage: {
+        type: Sequelize.TEXT,
+        allowNull: false
+      },
+      note: {
+        type: Sequelize.TEXT
+      },
+      lessonId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Lessons',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       createdAt: {
         allowNull: false,
@@ -28,6 +45,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Levels');
+    await queryInterface.dropTable('Grammars');
   }
 };

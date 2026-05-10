@@ -20,54 +20,18 @@ class AuthController {
                 {
                     httpOnly: true,
                     secure: false,
-                    sameSite: 'Strict',
-                    maxAge: 1000 * 60 * 60 * 24 * 7
+                    sameSite: 'Lax',
+                    maxAge: 1000 * 60 * 60 * 24 * 7,
+                    path: '/'
                 }
              );
-             res.json({
+             return res.json({
                 message: "Login successful",
                 user,
              })
         } catch (error) {
             console.error("Login error:", error);
-            res.status(error.status || 500).json({ message: error.message || "Internal server error" });   
-        }
-    }
-
-    async loginWithGoogle(req, res) {
-        const {credential} = req.body;
-        try {
-            const ticket = await client.verifyIdToken({
-                idToken: credential,
-                audience: process.env.GOOGLE_CLIENT_ID,
-            });
-            const { sub: googleId, email, name: userName, picture: avatarUrl } = ticket.getPayload();
-            const [user, created] = await User.findOrCreate({
-                where: { googleId },
-                defaults: { email, userName, avatarUrl, role: 'user' },
-            });
-            if (!created) {
-                await user.update({
-                  userName: userName,
-                  email,
-                  avatarUrl: avatarUrl,
-                  lastLogin: new Date(),
-                });
-            }
-            const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
-            res.cookie(
-                'session_token',
-                 token, 
-                 { 
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production', 
-                    sameSite: 'Lax', 
-                    maxAge: 7 * 24 * 60 * 60 * 1000 
-                });
-            return res.status(200).json({message: 'Login with Google successful', user});
-        } catch (error) {
-            console.error('Error during Google login:', error);
-            res.status(500).json({message: 'Internal server error'});
+            return res.status(error.status || 500).json({ message: error.message || "Internal server error" });   
         }
     }
     async logout(req, res) {

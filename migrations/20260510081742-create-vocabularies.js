@@ -1,21 +1,40 @@
 'use strict';
+
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Levels', {
+    await queryInterface.createTable('Vocabularies', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      levelName: {
+      vocabulary: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      level: {
+      meaning: {
+        type: Sequelize.TEXT,
+        allowNull: false
+      },
+      pinyin: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      audioUrl: {
+        type: Sequelize.TEXT
+      },
+      lessonId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Lessons',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       createdAt: {
         allowNull: false,
@@ -28,6 +47,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Levels');
+    await queryInterface.dropTable('Vocabularies');
   }
 };

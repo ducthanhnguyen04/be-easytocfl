@@ -3,33 +3,48 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class levels extends Model {
+  class Lessons extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      this.belongsTo(models.Levels, {
+        foreignKey: 'levelId',
+        as: 'level' 
+      });
     }
   }
-  levels.init({
+  Lessons.init({
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
-    levelName: {
+    lessonName: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
-    level: {
+    title: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+    },
+    isPremium: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    levelId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'levels',
+        key: 'id'
+      },
     }
   }, {
     sequelize,
-    modelName: 'Levels',
+    modelName: 'Lessons',
   });
-  return levels;
+  return Lessons;
 };

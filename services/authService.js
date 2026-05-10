@@ -1,4 +1,5 @@
 const { where } = require("sequelize");
+const crypto = require("crypto");
 const model = require("../models/index");
 const User = model.User;
 const jwt = require('jsonwebtoken');
@@ -22,13 +23,19 @@ class AuthService {
             error.status = 401;
             throw error;
         }
+        // const newVersion = crypto.randomBytes(16).toString("hex");
+        // await User.update(
+        //     { tokenVersion: newVersion },
+        //     { where: { id: user.id } }
+        // );
         const token = jwt.sign(
             { 
                 id: user.id, 
                 name: user.userName,
                 email: user.email, 
                 role: user.role,
-                avatarUrl: user.avatarUrl
+                avatarUrl: user.avatarUrl,
+                // version: newVersion,
             }, 
             process.env.JWT_SECRET, { expiresIn: '7d' }
         );

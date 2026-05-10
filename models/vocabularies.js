@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class levels extends Model {
+  class Vocabularies extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,25 +11,44 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+       this.belongsTo(models.Lessons, {
+        foreignKey: 'lessonId',
+        as: 'lesson' 
+      });
     }
   }
-  levels.init({
+  Vocabularies.init({
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
-    levelName: {
+    vocabulary: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }, 
+    meaning: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    pinyin: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    level: {
-      type: DataTypes.STRING,
-      allowNull: false
+    audioUrl: {
+      type: DataTypes.TEXT
+    },
+    lessonId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Lessons',
+        key: 'id'
+      },
     }
   }, {
     sequelize,
-    modelName: 'Levels',
+    modelName: 'Vocabularies',
   });
-  return levels;
+  return Vocabularies;
 };

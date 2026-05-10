@@ -31,6 +31,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     avatarUrl: DataTypes.TEXT,
     role: DataTypes.ENUM('user', 'admin'),
+    tokenVersion: {
+      type: DataTypes.STRING,
+      defaultValue: '',
+    },
     isPremium: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,

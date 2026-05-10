@@ -10,7 +10,8 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       userName: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       email: {
         type: Sequelize.STRING,
@@ -18,7 +19,8 @@ module.exports = {
         allowNull: false
       },
       password: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       googleId: {
         type: Sequelize.STRING,
@@ -31,6 +33,10 @@ module.exports = {
       role: {
         type: Sequelize.ENUM('user', 'admin'),
         defaultValue: 'user'
+      },
+      tokenVersion: {
+        type: Sequelize.STRING,
+        defaultValue: ''
       },
       isPremium: {
         type: Sequelize.BOOLEAN,
