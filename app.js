@@ -14,6 +14,7 @@ var levelRouter = require('./routes/level');
 var lessonRouter = require('./routes/lesson');
 var vocabRouter = require('./routes/vocabulary');
 var exampleRouter = require('./routes/example');
+var grammarRouter = require('./routes/grammar');
 
 var app = express();
 
@@ -51,6 +52,7 @@ app.use('/levels', levelRouter);
 app.use('/lessons', lessonRouter);
 app.use('/vocabularies', vocabRouter);
 app.use('/examples', exampleRouter);
+app.use('/grammars', grammarRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

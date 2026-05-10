@@ -26,5 +26,32 @@ class ExampleController {
             res.status(500).json({ error: error.message });
         }
     }
+    async updateExample(req, res) {
+        try {
+            const { example, meaning, pinyin, audioUrl, vocabularyId, grammarId } = req.body;
+            const { id } = req.params;
+            if(!example || !meaning || !pinyin) {
+                return res.status(400).json({ message: "Example, meaning and pinyin are required" });
+            }
+            const updatedExample = await Examples.update({ example, meaning, pinyin, audioUrl, vocabularyId, grammarId }, { where: { id } });
+            return res.json({
+                message: "Update example successfully",
+                example: updatedExample
+            })
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+    async deleteExample(req, res) {
+        try {
+            const { id } = req.params;
+            await Examples.destroy({ where: { id } });
+            return res.json({
+                message: "Delete example successfully",
+            })
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }   
+    }
 }
 module.exports = new ExampleController();
