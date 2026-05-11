@@ -1,9 +1,10 @@
 const { Grammars } = require("../../models");
+const grammarService = require("../../services/grammarService");
 
 class GrammarController {
     async getAllGrammars(req, res) {
         try {
-            const grammars = await Grammars.findAll();
+            const grammars = await grammarService.getAllGrammars();
             return res.json({
                 message: "Get all grammars successfully",
                 grammars
@@ -18,7 +19,7 @@ class GrammarController {
             if(!grammar || !structure || !usage || !lessonId) {
                 return res.status(400).json({ message: "All are required" });
             }
-            const newGrammar = await Grammars.create({ grammar, structure, usage, notes, lessonId });
+            const newGrammar = await grammarService.createGrammar({ grammar, structure, usage, notes, lessonId });
             return res.json({
                 message: "Create grammar successfully",
                 grammar: newGrammar
@@ -34,7 +35,7 @@ class GrammarController {
             if(!grammar || !structure || !usage || !lessonId) {
                 return res.status(400).json({ message: "All are required" });
             }
-            const updatedGrammar = await Grammars.update({ grammar, structure, usage, notes, lessonId }, { where: { id } });
+            const updatedGrammar = await grammarService.updateGrammar(id, { grammar, structure, usage, notes, lessonId });
             return res.json({
                 message: "Update grammar successfully",
                 grammar: updatedGrammar
@@ -46,7 +47,10 @@ class GrammarController {
      async deleteGrammar(req, res) {
         try {
             const { id } = req.params;
-            await Grammars.destroy({ where: { id } });
+            const deleted = await grammarService.deleteGrammar(id);
+            if(!deleted) {
+                return res.status(404).json({ message: "Grammar not found" });
+            }
             return res.json({
                 message: "Delete grammar successfully",
             })

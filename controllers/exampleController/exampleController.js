@@ -1,8 +1,10 @@
 const { Examples } = require("../../models");
+const exampleService = require("../../services/exampleService");
+
 class ExampleController {
     async getAllExamples(req, res) {
         try {
-            const examples = await Examples.findAll();
+            const examples = await exampleService.getAllExamples();
             return res.json({
                 message: "Get all examples successfully",
                 examples
@@ -17,7 +19,7 @@ class ExampleController {
             if(!example || !meaning || !pinyin) {
                 return res.status(400).json({ message: "Example, meaning and pinyin are required" });
             }
-            const newExample = await Examples.create({ example, meaning, pinyin, audioUrl, vocabularyId, grammarId });
+            const newExample = await exampleService.createExample({ example, meaning, pinyin, audioUrl, vocabularyId, grammarId });
             return res.json({
                 message: "Create example successfully",
                 example: newExample
@@ -33,7 +35,7 @@ class ExampleController {
             if(!example || !meaning || !pinyin) {
                 return res.status(400).json({ message: "Example, meaning and pinyin are required" });
             }
-            const updatedExample = await Examples.update({ example, meaning, pinyin, audioUrl, vocabularyId, grammarId }, { where: { id } });
+            const updatedExample = await exampleService.updateExample(id, { example, meaning, pinyin, audioUrl, vocabularyId, grammarId });
             return res.json({
                 message: "Update example successfully",
                 example: updatedExample
@@ -45,7 +47,10 @@ class ExampleController {
     async deleteExample(req, res) {
         try {
             const { id } = req.params;
-            await Examples.destroy({ where: { id } });
+            const deleted = await exampleService.deleteExample(id);
+            if(!deleted) {
+                return res.status(404).json({ message: "Example not found" });
+            }
             return res.json({
                 message: "Delete example successfully",
             })

@@ -1,9 +1,10 @@
 const { Vocabularies } = require("../../models");
+const vocabularyService = require("../../services/vocabularyService");
 
 class VocabularyController {
     async getAllVocabularies(req, res) {
         try {
-            const vocabularies = await Vocabularies.findAll();
+            const vocabularies = await vocabularyService.getAllVocabularies();
             return res.json({
                 message: "Get all vocabularies successfully",
                 vocabularies
@@ -18,7 +19,7 @@ class VocabularyController {
             if(!vocabulary || !meaning || !pinyin) {
                 return res.status(400).json({ message: "All are required" });
             }
-            const newVocabulary = await Vocabularies.create({ vocabulary, meaning, pinyin, audioUrl, lessonId });
+            const newVocabulary = await vocabularyService.createVocabulary({ vocabulary, meaning, pinyin, audioUrl, lessonId });
             return res.json({
                 message: "Create vocabulary successfully",
                 vocabulary: newVocabulary
@@ -34,7 +35,7 @@ class VocabularyController {
             if(!vocabulary || !meaning || !pinyin) {
                 return res.status(400).json({ message: "All are required" });
             }
-            const updatedVocabulary = await Vocabularies.update({ vocabulary, meaning, pinyin, audioUrl, lessonId }, { where: { id } });
+            const updatedVocabulary = await vocabularyService.updateVocabulary(id, { vocabulary, meaning, pinyin, audioUrl, lessonId });
             return res.json({
                 message: "Update vocabulary successfully",
                 vocabulary: updatedVocabulary
@@ -46,13 +47,31 @@ class VocabularyController {
     async deleteVocabulary(req, res) {
         try {
             const { id } = req.params;
-            await Vocabularies.destroy({ where: { id } });
+            const deleted = await vocabularyService.deleteVocabulary(id);
+            if (!deleted) {
+                return res.status(404).json({ message: "Vocabulary not found" });
+            }
             return res.json({
                 message: "Delete vocabulary successfully",
             })
         } catch (error) {
             res.status(500).json({ error: error.message });
         }   
+    }
+    async getVocabularyByLessonId(req, res) {
+        try {
+            const { lessonId } = req.query;
+            if(!lessonId) {
+                return res.status(400).json({ message: "Lesson ID is required" });
+            }
+            const vocabularies = await vocabularyService.getVocabularyByLessonId(lessonId);
+            return res.json({
+                message: "Get vocabularies by lesson ID successfully",
+                vocabularies
+            })
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
     }
 }
 

@@ -7,4 +7,5 @@ router.get('/get-all', LessonController.getAllLessons);
 router.post('/create', LessonController.createLesson);
 router.put('/update/:id', LessonController.updateLesson);
 router.delete('/delete/:id', LessonController.deleteLesson);
+router.get('/get-lesson-by-level-id', LessonController.getLessonByLevelId);
 module.exports = router;
