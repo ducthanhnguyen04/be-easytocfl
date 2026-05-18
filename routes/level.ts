@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import LevelController from '../controllers/levelController/levelController';
+
+const router = Router();
+
+router.get('/get-all', LevelController.getAllLevels.bind(LevelController));
+router.post('/create', LevelController.createLevel.bind(LevelController));
+router.put('/update/:id', LevelController.updateLevel.bind(LevelController));
+router.delete('/delete/:id', LevelController.deleteLevel.bind(LevelController));
+
+export default router;
