@@ -15,23 +15,24 @@ import lessonRouter from './routes/lesson';
 import vocabRouter from './routes/vocabulary';
 import exampleRouter from './routes/example';
 import grammarRouter from './routes/grammar';
+import commentRouter from './routes/comment';
 
 const app = express();
 
 
 app.use(cors({
-  origin: process.env.CLIENT_URL, 
-  credentials: true,    
-}  
+  origin: process.env.CLIENT_URL,
+  credentials: true,
+}
 ))
 
 app.use(session({
   secret: 'ducthanh',
   resave: false,
   saveUninitialized: true,
-  cookie: { 
-    secure: false, 
-    httpOnly: true 
+  cookie: {
+    secure: false,
+    httpOnly: true
   }
 }))
 
@@ -53,13 +54,14 @@ app.use('/lessons', lessonRouter);
 app.use('/vocabularies', vocabRouter);
 app.use('/examples', exampleRouter);
 app.use('/grammars', grammarRouter);
+app.use('/comments', commentRouter);
 // catch 404 and forward to error handler
-app.use(function(req: Request, res: Response, next: NextFunction) {
+app.use(function (req: Request, res: Response, next: NextFunction) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err: any, req: Request, res: Response, next: NextFunction) {
+app.use(function (err: any, req: Request, res: Response, next: NextFunction) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

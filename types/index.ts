@@ -1,6 +1,5 @@
 import { Request } from 'express';
 
-// ─── JWT Payload ────────────────────────────────────────────────────────────
 export interface JwtPayload {
   id: number;
   name: string;
@@ -10,12 +9,10 @@ export interface JwtPayload {
   version?: string;
 }
 
-// ─── Authenticated Request ───────────────────────────────────────────────────
 export interface AuthRequest extends Request {
   user?: JwtPayload;
 }
 
-// ─── User ────────────────────────────────────────────────────────────────────
 export interface SafeUser {
   id: number;
   name: string;
@@ -24,13 +21,11 @@ export interface SafeUser {
   avatarUrl?: string;
 }
 
-// ─── Level ───────────────────────────────────────────────────────────────────
 export interface CreateLevelDto {
   levelName: string;
   level: string;
 }
 
-// ─── Lesson ──────────────────────────────────────────────────────────────────
 export interface CreateLessonDto {
   lessonName: string;
   title: string;
@@ -44,7 +39,6 @@ export interface UpdateLessonDto {
   levelId?: number;
 }
 
-// ─── Vocabulary ──────────────────────────────────────────────────────────────
 export interface CreateVocabularyDto {
   vocabulary: string;
   meaning: string;
@@ -53,7 +47,6 @@ export interface CreateVocabularyDto {
   lessonId: number;
 }
 
-// ─── Example ─────────────────────────────────────────────────────────────────
 export interface CreateExampleDto {
   example: string;
   meaning: string;
@@ -63,7 +56,6 @@ export interface CreateExampleDto {
   grammarId?: number;
 }
 
-// ─── Grammar ─────────────────────────────────────────────────────────────────
 export interface CreateGrammarDto {
   grammar: string;
   structure: string;
@@ -72,7 +64,15 @@ export interface CreateGrammarDto {
   lessonId: number;
 }
 
-// ─── Custom Error with status ─────────────────────────────────────────────────
+export interface CreateCommentDto {
+  content: string;
+  userId: number;
+}
+
+export interface UpdateCommentDto {
+  content?: string;
+}
+
 export interface AppError extends Error {
   status?: number;
 }
