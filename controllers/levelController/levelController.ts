@@ -4,13 +4,13 @@ import { CreateLevelDto, AppError } from '../../types';
 
 class LevelController {
   async getAllLevels(_req: Request, res: Response): Promise<Response> {
-    try {
-      const levels = await levelService.getAllLevels();
-      return res.status(200).json({ message: 'Get all levels successfully', levels });
-    } catch (error) {
-      const err = error as Error;
-      return res.status(500).json({ message: 'Internal Server Error', error: err.message });
-    }
+    // try {
+    const levels = await levelService.getAllLevels();
+    return res.status(200).json({ message: 'Get all levels successfully', levels });
+    // } catch (error) {
+    //   const err = error as Error;
+    //   return res.status(500).json({ message: 'Internal Server Error', error: err.message });
+    // }
   }
 
   async createLevel(req: Request, res: Response): Promise<Response> {

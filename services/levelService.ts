@@ -2,10 +2,18 @@ import db from '../models';
 import { CreateLevelDto } from '../types';
 
 const Levels = db.Levels;
+const Lessons = db.Lessons;
 
 class LevelService {
   async getAllLevels() {
-    return await Levels.findAll({ raw: true });
+    return await Levels.findAll({
+      include: [
+        {
+          model: Lessons,
+          as: 'lessons'
+        }
+      ]
+    });
   }
 
   async createLevel(data: CreateLevelDto) {

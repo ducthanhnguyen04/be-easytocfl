@@ -7,7 +7,7 @@ interface LevelAttributes {
   level: string;
 }
 
-interface LevelCreationAttributes extends Optional<LevelAttributes, 'id'> {}
+interface LevelCreationAttributes extends Optional<LevelAttributes, 'id'> { }
 
 export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
   class Levels extends Model<LevelAttributes, LevelCreationAttributes> implements LevelAttributes {
@@ -17,6 +17,10 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
 
     static associate(models: any) {
       // define association here
+      this.hasMany(models.Lessons, {
+        foreignKey: 'levelId',
+        as: 'lessons',
+      });
     }
   }
 
