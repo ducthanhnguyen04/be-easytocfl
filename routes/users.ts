@@ -1,9 +1,11 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import userController from '../controllers/userController/userController';
+import authMiddleware from '../middlewares/authMiddleware';
 
 const router = Router();
 
-router.get('/', (_req: Request, res: Response) => {
-  res.send('respond with a resource');
-});
+router.get('/check-premium', authMiddleware, userController.checkIsPremium);
+router.put('/profile', authMiddleware, userController.updateProfile.bind(userController));
 
 export default router;
+

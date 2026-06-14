@@ -49,7 +49,7 @@ class AuthService {
       userName,
       email,
       password: hashedPassword,
-      googleId: '',
+      googleId: null,
       avatarUrl: `${process.env.BACKEND_URL}/avatars/default.png`,
       role: 'user',
     });

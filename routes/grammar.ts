@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import GrammarController from '../controllers/grammarController/grammarController';
+import authMiddleware from '../middlewares/authMiddleware';
+import checkAdmin from '../middlewares/checkAdmin';
 
 const router = Router();
 
@@ -9,3 +11,4 @@ router.put('/update/:id', GrammarController.updateGrammar.bind(GrammarController
 router.delete('/delete/:id', GrammarController.deleteGrammar.bind(GrammarController));
 
 export default router;
+

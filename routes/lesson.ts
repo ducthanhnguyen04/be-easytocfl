@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import LessonController from '../controllers/lessonController/lessonController';
+import authMiddleware from '../middlewares/authMiddleware';
+import checkAdmin from '../middlewares/checkAdmin';
 
 const router = Router();
 
@@ -10,3 +12,4 @@ router.delete('/delete/:id', LessonController.deleteLesson.bind(LessonController
 router.get('/get-lesson-by-level-id', LessonController.getLessonByLevelId.bind(LessonController));
 
 export default router;
+

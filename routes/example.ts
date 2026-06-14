@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import ExampleController from '../controllers/exampleController/exampleController';
+import authMiddleware from '../middlewares/authMiddleware';
+import checkAdmin from '../middlewares/checkAdmin';
 
 const router = Router();
 
@@ -9,3 +11,4 @@ router.put('/update/:id', ExampleController.updateExample.bind(ExampleController
 router.delete('/delete/:id', ExampleController.deleteExample.bind(ExampleController));
 
 export default router;
+

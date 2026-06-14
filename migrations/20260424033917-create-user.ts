@@ -25,7 +25,7 @@ export async function up(queryInterface: QueryInterface): Promise<void> {
     googleId: {
       type: DataTypes.STRING,
       unique: true,
-      allowNull: false
+      allowNull: true
     },
     avatarUrl: {
       type: DataTypes.TEXT

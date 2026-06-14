@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import VocabularyController from '../controllers/vocabularyController/vocabularyController';
-
+import { CheckPremiumAccess } from '../middlewares/checkPremiumAccess';
+import authMiddleware from '../middlewares/authMiddleware';
 const router = Router();
 
 router.get('/get-all', VocabularyController.getAllVocabularies.bind(VocabularyController));
