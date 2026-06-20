@@ -67,7 +67,32 @@ class UserController {
             return res.status(err.status || 500).json({ message: err.message || 'Internal server error' });
         }
     }
+
+    async changePassword(req: AuthRequest, res: Response): Promise<Response> {
+        try {
+            const userId = req.user?.id;
+            const { currentPassword, newPassword } = req.body as { currentPassword: string; newPassword: string };
+
+            if (!userId) {
+                return res.status(401).json({ message: 'Unauthorized' });
+            }
+
+            if (!currentPassword || !newPassword) {
+                return res.status(400).json({ message: 'Vui lòng điền đầy đủ mật khẩu hiện tại và mật khẩu mới!' });
+            }
+
+            if (newPassword.length < 6) {
+                return res.status(400).json({ message: 'Mật khẩu mới phải có ít nhất 6 ký tự!' });
+            }
+
+            await userService.changePassword(userId, currentPassword, newPassword);
+
+            return res.status(200).json({ message: 'Đổi mật khẩu thành công!' });
+        } catch (error) {
+            const err = error as AppError;
+            return res.status(err.status || 500).json({ message: err.message || 'Đổi mật khẩu thất bại' });
+        }
+    }
 }
 
 export default new UserController();
-
