@@ -15,11 +15,11 @@ class LessonController {
 
   async createLesson(req: Request, res: Response): Promise<Response> {
     try {
-      const { lessonName, title, slug, levelId } = req.body as CreateLessonDto;
+      const { lessonName, title, slug, levelId, isPremium } = req.body as CreateLessonDto;
       if (!lessonName || !title || !slug || !levelId) {
         return res.status(400).json({ message: 'Lesson name, title, slug and level ID are required' });
       }
-      const newLesson = await LessonService.createLesson({ lessonName, title, slug, levelId });
+      const newLesson = await LessonService.createLesson({ lessonName, title, slug, levelId, isPremium });
       return res.json({ message: 'Create lesson successfully', lesson: newLesson });
     } catch (error) {
       const err = error as Error;
@@ -29,9 +29,9 @@ class LessonController {
 
   async updateLesson(req: Request, res: Response): Promise<Response> {
     try {
-      const { lessonName, title, levelId } = req.body as UpdateLessonDto;
+      const { lessonName, title, slug, levelId, isPremium } = req.body as UpdateLessonDto;
       const lessonId = req.params.id as string;
-      const lesson = await LessonService.updateLesson(lessonId, { lessonName, title, levelId });
+      const lesson = await LessonService.updateLesson(lessonId, { lessonName, title, slug, levelId, isPremium });
       if (!lesson) {
         return res.status(404).json({ message: 'Lesson not found' });
       }

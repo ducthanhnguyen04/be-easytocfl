@@ -69,6 +69,31 @@ class VocabularyController {
       return res.status(500).json({ error: err.message });
     }
   }
+
+  async importVocabulary(req: Request, res: Response): Promise<Response> {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: 'Excel file is required' });
+      }
+
+      const lessonIdStr = (req.body.lessonId || req.query.lessonId) as string | undefined;
+      const defaultLessonId = lessonIdStr ? parseInt(lessonIdStr, 10) : undefined;
+
+      const importedVocabularies = await vocabularyService.importVocabulariesFromBuffer(
+        req.file.buffer,
+        defaultLessonId
+      );
+
+      return res.json({
+        message: 'Import vocabulary successfully',
+        count: importedVocabularies.length,
+        vocabularies: importedVocabularies,
+      });
+    } catch (error) {
+      const err = error as Error;
+      return res.status(400).json({ message: err.message });
+    }
+  }
 }
 
 export default new VocabularyController();

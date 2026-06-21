@@ -31,12 +31,15 @@ export interface CreateLessonDto {
   title: string;
   slug: string;
   levelId: number;
+  isPremium?: boolean;
 }
 
 export interface UpdateLessonDto {
   lessonName?: string;
   title?: string;
+  slug?: string;
   levelId?: number;
+  isPremium?: boolean;
 }
 
 export interface CreateVocabularyDto {
