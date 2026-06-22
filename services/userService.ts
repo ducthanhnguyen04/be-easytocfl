@@ -52,6 +52,7 @@ class UserService {
             email: user.email,
             role: user.role,
             avatarUrl: user.avatarUrl,
+            isPremium: !!user.isPremium,
         };
     }
 

@@ -46,6 +46,7 @@ class UserController {
                 email: updatedUser.email,
                 role: updatedUser.role,
                 avatarUrl: updatedUser.avatarUrl,
+                isPremium: !!updatedUser.isPremium,
             };
 
             const token = jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: '7d' });

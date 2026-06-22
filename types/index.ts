@@ -7,6 +7,7 @@ export interface JwtPayload {
   role: 'user' | 'admin';
   avatarUrl?: string;
   version?: string;
+  isPremium?: boolean;
 }
 
 export interface AuthRequest extends Request {
@@ -19,6 +20,7 @@ export interface SafeUser {
   email: string;
   role: 'user' | 'admin';
   avatarUrl?: string;
+  isPremium?: boolean;
 }
 
 export interface CreateLevelDto {

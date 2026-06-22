@@ -28,6 +28,7 @@ class AuthService {
       email: user.email as string,
       role: user.role as 'user' | 'admin',
       avatarUrl: user.avatarUrl as string | undefined,
+      isPremium: !!user.isPremium,
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: '7d' });
@@ -38,6 +39,7 @@ class AuthService {
       email: user.email as string,
       role: user.role as 'user' | 'admin',
       avatarUrl: user.avatarUrl as string | undefined,
+      isPremium: !!user.isPremium,
     };
 
     return { user: safeUser, token };
