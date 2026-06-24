@@ -21,6 +21,10 @@ export async function up(queryInterface: QueryInterface): Promise<void> {
       type: DataTypes.TEXT,
       allowNull: false
     },
+    definition: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
     note: {
       type: DataTypes.TEXT
     },

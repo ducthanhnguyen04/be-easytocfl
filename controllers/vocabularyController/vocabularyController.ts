@@ -15,11 +15,11 @@ class VocabularyController {
 
   async createVocabulary(req: Request, res: Response): Promise<Response> {
     try {
-      const { vocabulary, meaning, pinyin, audioUrl, lessonId } = req.body as CreateVocabularyDto;
-      if (!vocabulary || !meaning || !pinyin) {
+      const { vocabulary, meaning, englishMeaning, pinyin, audioUrl, lessonId } = req.body as CreateVocabularyDto;
+      if (!vocabulary || !meaning || !englishMeaning || !pinyin) {
         return res.status(400).json({ message: 'All are required' });
       }
-      const newVocabulary = await vocabularyService.createVocabulary({ vocabulary, meaning, pinyin, audioUrl, lessonId });
+      const newVocabulary = await vocabularyService.createVocabulary({ vocabulary, meaning, englishMeaning, pinyin, audioUrl, lessonId });
       return res.json({ message: 'Create vocabulary successfully', vocabulary: newVocabulary });
     } catch (error) {
       const err = error as Error;
@@ -30,11 +30,11 @@ class VocabularyController {
   async updateVocabulary(req: Request, res: Response): Promise<Response> {
     try {
       const id = req.params.id as string;
-      const { vocabulary, meaning, pinyin, audioUrl, lessonId } = req.body as CreateVocabularyDto;
-      if (!vocabulary || !meaning || !pinyin) {
+      const { vocabulary, meaning, englishMeaning, pinyin, audioUrl, lessonId } = req.body as CreateVocabularyDto;
+      if (!vocabulary || !meaning || !englishMeaning || !pinyin) {
         return res.status(400).json({ message: 'All are required' });
       }
-      const updatedVocabulary = await vocabularyService.updateVocabulary(id, { vocabulary, meaning, pinyin, audioUrl, lessonId });
+      const updatedVocabulary = await vocabularyService.updateVocabulary(id, { vocabulary, meaning, englishMeaning, pinyin, audioUrl, lessonId });
       return res.json({ message: 'Update vocabulary successfully', vocabulary: updatedVocabulary });
     } catch (error) {
       const err = error as Error;

@@ -5,18 +5,20 @@ interface VocabularyAttributes {
   id: number;
   vocabulary: string;
   meaning: string;
+  englishMeaning: string;
   pinyin: string;
   audioUrl?: string;
   lessonId: number;
 }
 
-interface VocabularyCreationAttributes extends Optional<VocabularyAttributes, 'id' | 'audioUrl'> {}
+interface VocabularyCreationAttributes extends Optional<VocabularyAttributes, 'id' | 'audioUrl'> { }
 
 export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
   class Vocabularies extends Model<VocabularyAttributes, VocabularyCreationAttributes> implements VocabularyAttributes {
     declare id: number;
     declare vocabulary: string;
     declare meaning: string;
+    declare englishMeaning: string;
     declare pinyin: string;
     declare audioUrl?: string;
     declare lessonId: number;
@@ -40,6 +42,10 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
       allowNull: false,
     },
     meaning: {
+      type: dataTypes.TEXT,
+      allowNull: false,
+    },
+    englishMeaning: {
       type: dataTypes.TEXT,
       allowNull: false,
     },

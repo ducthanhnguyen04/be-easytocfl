@@ -6,11 +6,12 @@ interface GrammarAttributes {
   grammar: string;
   structure: string;
   usage: string;
+  definition?: string;
   note?: string;
   lessonId: number;
 }
 
-interface GrammarCreationAttributes extends Optional<GrammarAttributes, 'id' | 'note'> {}
+interface GrammarCreationAttributes extends Optional<GrammarAttributes, 'id' | 'note' | 'definition'> { }
 
 export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
   class Grammars extends Model<GrammarAttributes, GrammarCreationAttributes> implements GrammarAttributes {
@@ -18,6 +19,7 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
     declare grammar: string;
     declare structure: string;
     declare usage: string;
+    declare definition?: string;
     declare note?: string;
     declare lessonId: number;
 
@@ -46,6 +48,10 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
     usage: {
       type: dataTypes.TEXT,
       allowNull: false,
+    },
+    definition: {
+      type: dataTypes.TEXT,
+      allowNull: true,
     },
     note: {
       type: dataTypes.TEXT,

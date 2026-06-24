@@ -17,6 +17,10 @@ export async function up(queryInterface: QueryInterface): Promise<void> {
       type: DataTypes.TEXT,
       allowNull: false
     },
+    englishMeaning: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
     pinyin: {
       type: DataTypes.STRING,
       allowNull: false

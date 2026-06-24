@@ -47,6 +47,7 @@ export interface UpdateLessonDto {
 export interface CreateVocabularyDto {
   vocabulary: string;
   meaning: string;
+  englishMeaning: string;
   pinyin: string;
   audioUrl?: string;
   lessonId: number;
