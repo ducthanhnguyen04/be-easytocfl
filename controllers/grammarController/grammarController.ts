@@ -15,11 +15,11 @@ class GrammarController {
 
   async createGrammar(req: Request, res: Response): Promise<Response> {
     try {
-      const { grammar, structure, usage, notes, lessonId } = req.body as CreateGrammarDto;
-      if (!grammar || !structure || !usage || !lessonId) {
+      const { grammar, structure, usage, definition, notes, lessonId } = req.body as CreateGrammarDto;
+      if (!grammar || !structure || !usage || !definition || !lessonId) {
         return res.status(400).json({ message: 'All are required' });
       }
-      const newGrammar = await grammarService.createGrammar({ grammar, structure, usage, notes, lessonId });
+      const newGrammar = await grammarService.createGrammar({ grammar, structure, usage, definition, notes, lessonId });
       return res.json({ message: 'Create grammar successfully', grammar: newGrammar });
     } catch (error) {
       const err = error as Error;
@@ -30,11 +30,11 @@ class GrammarController {
   async updateGrammar(req: Request, res: Response): Promise<Response> {
     try {
       const id = req.params.id as string;
-      const { grammar, structure, usage, notes, lessonId } = req.body as CreateGrammarDto;
-      if (!grammar || !structure || !usage || !lessonId) {
+      const { grammar, structure, usage, definition, notes, lessonId } = req.body as CreateGrammarDto;
+      if (!grammar || !structure || !usage || !definition || !lessonId) {
         return res.status(400).json({ message: 'All are required' });
       }
-      const updatedGrammar = await grammarService.updateGrammar(id, { grammar, structure, usage, notes, lessonId });
+      const updatedGrammar = await grammarService.updateGrammar(id, { grammar, structure, usage, definition, notes, lessonId });
       return res.json({ message: 'Update grammar successfully', grammar: updatedGrammar });
     } catch (error) {
       const err = error as Error;

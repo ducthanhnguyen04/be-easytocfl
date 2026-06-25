@@ -66,6 +66,7 @@ export interface CreateGrammarDto {
   grammar: string;
   structure: string;
   usage: string;
+  definition: string;
   notes?: string;
   lessonId: number;
 }
