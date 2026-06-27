@@ -28,6 +28,10 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
         foreignKey: 'lessonId',
         as: 'lesson',
       });
+      this.hasMany(models.Examples, {
+        foreignKey: 'grammarId',
+        as: 'examples',
+      });
     }
   }
 

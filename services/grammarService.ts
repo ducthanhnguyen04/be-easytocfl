@@ -8,6 +8,18 @@ class GrammarService {
     return await Grammars.findAll();
   }
 
+  async getGrammarsByLessonId(lessonId: string | number) {
+    return await Grammars.findAll({
+      where: { lessonId },
+      include: [
+        {
+          model: db.Examples,
+          as: 'examples',
+        },
+      ],
+    });
+  }
+
   async createGrammar(data: CreateGrammarDto) {
     return await Grammars.create(data);
   }

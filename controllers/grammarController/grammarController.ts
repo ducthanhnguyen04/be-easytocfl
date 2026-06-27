@@ -13,6 +13,20 @@ class GrammarController {
     }
   }
 
+  async getGrammarsByLessonId(req: Request, res: Response): Promise<Response> {
+    try {
+      const lessonId = req.query.lessonId as string;
+      if (!lessonId) {
+        return res.status(400).json({ message: 'Lesson ID is required' });
+      }
+      const grammars = await grammarService.getGrammarsByLessonId(lessonId);
+      return res.json({ message: 'Get grammars by lesson ID successfully', grammars });
+    } catch (error) {
+      const err = error as Error;
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
   async createGrammar(req: Request, res: Response): Promise<Response> {
     try {
       const { grammar, structure, usage, definition, notes, lessonId } = req.body as CreateGrammarDto;
