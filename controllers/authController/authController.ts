@@ -32,6 +32,33 @@ class AuthController {
     }
   }
 
+  async googleLogin(req: AuthRequest, res: Response): Promise<Response> {
+    try {
+      const { credential } = req.body as { credential: string };
+
+      if (!credential) {
+        return res.status(400).json({ message: 'Google credential is required' });
+      }
+
+      const { user, token } = await AuthService.loginGoogle(credential);
+
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax',
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        path: '/',
+      });
+
+      return res.json({ message: 'Google login successful', user });
+    } catch (error) {
+      const err = error as AppError;
+      console.error('Google login error:', err);
+      return res.status(err.status ?? 500).json({ message: err.message ?? 'Internal server error' });
+    }
+  }
+
+
   async logout(_req: AuthRequest, res: Response): Promise<Response> {
     res.clearCookie('token', {
       httpOnly: true,

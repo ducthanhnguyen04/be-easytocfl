@@ -77,6 +77,43 @@ class UserService {
         user.password = await hashPassword(newPassword);
         await user.save();
     }
+
+    async getAllUsers(): Promise<any[]> {
+        return await User.findAll({
+            attributes: ['id', 'userName', 'email', 'role', 'avatarUrl', 'isPremium', 'googleId', 'lastLogin', 'createdAt'],
+            order: [['createdAt', 'DESC']]
+        });
+    }
+
+    async updateUserRole(id: string | number, role: 'user' | 'admin'): Promise<any> {
+        const user = await User.findByPk(id);
+        if (!user) {
+            const error: any = new Error('User not found');
+            error.status = 404;
+            throw error;
+        }
+        user.role = role;
+        await user.save();
+        return user;
+    }
+
+    async togglePremium(id: string | number): Promise<any> {
+        const user = await User.findByPk(id);
+        if (!user) {
+            const error: any = new Error('User not found');
+            error.status = 404;
+            throw error;
+        }
+        user.isPremium = !user.isPremium;
+        await user.save();
+        return user;
+    }
+
+    async deleteUser(id: string | number): Promise<boolean> {
+        const deleted = await User.destroy({ where: { id } });
+        return deleted > 0;
+    }
 }
 
 export default new UserService();
+

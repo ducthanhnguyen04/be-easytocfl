@@ -8,6 +8,7 @@ export interface JwtPayload {
   avatarUrl?: string;
   version?: string;
   isPremium?: boolean;
+  isGoogleLogin?: boolean;
 }
 
 export interface AuthRequest extends Request {
@@ -21,6 +22,7 @@ export interface SafeUser {
   role: 'user' | 'admin';
   avatarUrl?: string;
   isPremium?: boolean;
+  isGoogleLogin?: boolean;
 }
 
 export interface CreateLevelDto {
@@ -68,6 +70,7 @@ export interface CreateGrammarDto {
   usage: string;
   definition: string;
   notes?: string;
+  note?: string;
   lessonId: number;
 }
 
@@ -83,3 +86,21 @@ export interface UpdateCommentDto {
 export interface AppError extends Error {
   status?: number;
 }
+
+export interface CreateRadicalDto {
+  radical: string;
+  pinyin: string;
+  meaning: string;
+  englishMeaning: string;
+  profoundMeaning?: string;
+  example?: string;
+  stroke: string;
+}
+
+export interface CreateExcersiseDto {
+  title: string;
+  meaning: string;
+  englishMeaning: string;
+  grammarId: number;
+}
+

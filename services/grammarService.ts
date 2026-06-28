@@ -16,6 +16,10 @@ class GrammarService {
           model: db.Examples,
           as: 'examples',
         },
+        {
+          model: db.Excersises,
+          as: 'excersises',
+        },
       ],
     });
   }
