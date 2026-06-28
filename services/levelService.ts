@@ -7,6 +7,10 @@ const Lessons = db.Lessons;
 class LevelService {
   async getAllLevels() {
     return await Levels.findAll({
+      order: [
+        ['id', 'ASC'],
+        [{ model: Lessons, as: 'lessons' }, 'id', 'ASC']
+      ],
       include: [
         {
           model: Lessons,

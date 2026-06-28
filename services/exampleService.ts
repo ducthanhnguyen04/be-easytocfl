@@ -5,7 +5,9 @@ const Examples = db.Examples;
 
 class ExampleService {
   async getAllExamples() {
-    return await Examples.findAll();
+    return await Examples.findAll({
+      order: [['id', 'ASC']]
+    });
   }
 
   async createExample(data: CreateExampleDto) {

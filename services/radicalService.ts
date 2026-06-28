@@ -5,7 +5,9 @@ const Radical = db.Radical;
 
 class RadicalService {
   async getAllRadicals() {
-    return await Radical.findAll();
+    return await Radical.findAll({
+      order: [['id', 'ASC']]
+    });
   }
 
   async createRadical(data: CreateRadicalDto) {

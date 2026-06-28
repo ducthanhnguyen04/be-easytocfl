@@ -5,7 +5,9 @@ const Lessons = db.Lessons;
 
 class LessonService {
   async getAllLessons() {
-    return await Lessons.findAll();
+    return await Lessons.findAll({
+      order: [['id', 'ASC']]
+    });
   }
 
   async createLesson(data: CreateLessonDto) {
@@ -25,7 +27,10 @@ class LessonService {
   }
 
   async getLessonByLevelId(levelId: string | number) {
-    return await Lessons.findAll({ where: { levelId } });
+    return await Lessons.findAll({
+      where: { levelId },
+      order: [['id', 'ASC']]
+    });
   }
 }
 

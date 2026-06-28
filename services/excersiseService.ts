@@ -12,6 +12,7 @@ class ExcersiseService {
           as: 'grammar',
         },
       ],
+      order: [['id', 'ASC']]
     });
   }
 
@@ -34,6 +35,7 @@ class ExcersiseService {
   async getExcersisesByGrammarId(grammarId: string | number) {
     return await Excersises.findAll({
       where: { grammarId },
+      order: [['id', 'ASC']]
     });
   }
 }

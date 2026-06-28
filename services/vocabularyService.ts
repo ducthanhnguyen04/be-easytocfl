@@ -6,7 +6,9 @@ const Vocabularies = db.Vocabularies;
 
 class VocabularyService {
   async getAllVocabularies() {
-    return await Vocabularies.findAll();
+    return await Vocabularies.findAll({
+      order: [['id', 'ASC']]
+    });
   }
 
   async createVocabulary(data: CreateVocabularyDto) {
@@ -26,7 +28,10 @@ class VocabularyService {
   }
 
   async getVocabularyByLessonId(lessonId: string | number) {
-    return await Vocabularies.findAll({ where: { lessonId } });
+    return await Vocabularies.findAll({
+      where: { lessonId },
+      order: [['id', 'ASC']]
+    });
   }
 
   async importVocabulariesFromBuffer(buffer: Buffer, defaultLessonId?: number) {

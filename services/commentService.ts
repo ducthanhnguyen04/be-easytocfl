@@ -14,7 +14,8 @@ class CommentService {
                     attributes: ['id', 'userName', 'email', 'avatarUrl']
                 }
             ],
-            nest: true
+            nest: true,
+            order: [['id', 'ASC']]
         });
     }
     async createComment(data: CreateCommentDto) {
