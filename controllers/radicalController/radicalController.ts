@@ -15,20 +15,40 @@ class RadicalController {
 
   async createRadical(req: Request, res: Response): Promise<Response> {
     try {
-      const { radical, pinyin, meaning, englishMeaning, profoundMeaning, example, stroke } = req.body as CreateRadicalDto;
-      if (!radical || !pinyin || !meaning || !englishMeaning || !stroke) {
-        return res.status(400).json({ message: 'radical, pinyin, meaning, englishMeaning, and stroke are required' });
+      const body = req.body;
+
+      if (Array.isArray(body)) {
+        if (body.length === 0) {
+          return res.status(400).json({ message: 'Array of radicals cannot be empty' });
+        }
+
+        for (let i = 0; i < body.length; i++) {
+          const { radical, pinyin, meaning, englishMeaning, stroke } = body[i];
+          if (!radical || !pinyin || !meaning || !englishMeaning || !stroke) {
+            return res.status(400).json({
+              message: `radical, pinyin, meaning, englishMeaning, and stroke are required at index ${i}`
+            });
+          }
+        }
+
+        const newRadicals = await radicalService.createRadical(body);
+        return res.status(201).json({ message: 'Create radicals successfully', radicals: newRadicals });
+      } else {
+        const { radical, pinyin, meaning, englishMeaning, profoundMeaning, example, stroke } = body as CreateRadicalDto;
+        if (!radical || !pinyin || !meaning || !englishMeaning || !stroke) {
+          return res.status(400).json({ message: 'radical, pinyin, meaning, englishMeaning, and stroke are required' });
+        }
+        const newRadical = await radicalService.createRadical({
+          radical,
+          pinyin,
+          meaning,
+          englishMeaning,
+          profoundMeaning,
+          example,
+          stroke
+        });
+        return res.status(201).json({ message: 'Create radical successfully', radical: newRadical });
       }
-      const newRadical = await radicalService.createRadical({
-        radical,
-        pinyin,
-        meaning,
-        englishMeaning,
-        profoundMeaning,
-        example,
-        stroke
-      });
-      return res.status(201).json({ message: 'Create radical successfully', radical: newRadical });
     } catch (error) {
       const err = error as Error;
       return res.status(500).json({ error: err.message });

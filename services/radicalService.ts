@@ -10,7 +10,10 @@ class RadicalService {
     });
   }
 
-  async createRadical(data: CreateRadicalDto) {
+  async createRadical(data: CreateRadicalDto | CreateRadicalDto[]) {
+    if (Array.isArray(data)) {
+      return await Radical.bulkCreate(data);
+    }
     return await Radical.create(data);
   }
 
