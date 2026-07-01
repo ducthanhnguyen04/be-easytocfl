@@ -35,3 +35,41 @@ export async function uploadToSupabase(fileBuffer: Buffer, fileName: string, mim
   // Return the public URL for the uploaded asset
   return `${baseSupabaseUrl}/storage/v1/object/public/${bucketName}/${sanitizedFileName}`;
 }
+
+export async function deleteFromSupabase(imageUrl: string): Promise<void> {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
+  const bucketName = process.env.SUPABASE_BUCKET || 'levels';
+
+  if (!supabaseUrl || !supabaseKey) {
+    console.warn('Supabase URL or Key not configured. Skipping image deletion.');
+    return;
+  }
+
+  try {
+    // Extract filename from the URL (the last part of the path)
+    const urlParts = imageUrl.split('/');
+    const filename = urlParts[urlParts.length - 1];
+    if (!filename) return;
+
+    const baseSupabaseUrl = supabaseUrl.replace(/\/rest\/v1\/?$/, '').replace(/\/$/, '');
+    const deleteUrl = `${baseSupabaseUrl}/storage/v1/object/${bucketName}/${filename}`;
+
+    const response = await fetch(deleteUrl, {
+      method: 'DELETE',
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Failed to delete file from Supabase: ${response.statusText} - ${errorText}`);
+    } else {
+      console.log(`Successfully deleted file from Supabase: ${filename}`);
+    }
+  } catch (error) {
+    console.error('Error during Supabase file deletion:', error);
+  }
+}
