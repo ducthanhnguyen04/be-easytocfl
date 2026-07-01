@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import levelService from '../../services/levelService';
 import { CreateLevelDto, AppError } from '../../types';
+import { uploadToSupabase } from '../../utils/supabase';
 
 class LevelController {
   async getAllLevels(_req: Request, res: Response): Promise<Response> {
@@ -15,11 +16,11 @@ class LevelController {
 
   async createLevel(req: Request, res: Response): Promise<Response> {
     try {
-      const { levelName, level } = req.body as CreateLevelDto;
+      const { levelName, level, image } = req.body as CreateLevelDto;
       if (!levelName || !level) {
         return res.status(400).json({ message: 'Level name and level are required' });
       }
-      const newLevel = await levelService.createLevel({ levelName, level });
+      const newLevel = await levelService.createLevel({ levelName, level, image });
       return res.status(201).json({ message: 'Create level successfully', level: newLevel });
     } catch (error) {
       const err = error as Error;
@@ -49,6 +50,23 @@ class LevelController {
         return res.status(404).json({ message: 'Level not found to delete' });
       }
       return res.status(200).json({ message: 'Delete level successfully' });
+    } catch (error) {
+      const err = error as Error;
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  async uploadImage(req: Request, res: Response): Promise<Response> {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+      }
+      const imageUrl = await uploadToSupabase(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype
+      );
+      return res.status(200).json({ message: 'Upload image successfully', imageUrl });
     } catch (error) {
       const err = error as Error;
       return res.status(500).json({ error: err.message });

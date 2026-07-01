@@ -5,15 +5,17 @@ interface LevelAttributes {
   id: number;
   levelName: string;
   level: string;
+  image?: string;
 }
 
-interface LevelCreationAttributes extends Optional<LevelAttributes, 'id'> { }
+interface LevelCreationAttributes extends Optional<LevelAttributes, 'id' | 'image'> { }
 
 export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
   class Levels extends Model<LevelAttributes, LevelCreationAttributes> implements LevelAttributes {
     declare id: number;
     declare levelName: string;
     declare level: string;
+    declare image?: string;
 
     static associate(models: any) {
       // define association here
@@ -37,6 +39,10 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
     level: {
       type: dataTypes.STRING,
       allowNull: false,
+    },
+    image: {
+      type: dataTypes.STRING,
+      allowNull: true,
     },
   }, {
     sequelize,

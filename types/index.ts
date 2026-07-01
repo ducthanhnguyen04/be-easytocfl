@@ -28,6 +28,7 @@ export interface SafeUser {
 export interface CreateLevelDto {
   levelName: string;
   level: string;
+  image?: string;
 }
 
 export interface CreateLessonDto {
