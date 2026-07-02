@@ -1,12 +1,18 @@
 import { Request, Response } from 'express';
 import levelService from '../../services/levelService';
-import { CreateLevelDto, AppError } from '../../types';
+import { CreateLevelDto } from '../../types';
 import { uploadToSupabase } from '../../utils/supabase';
+import { memoryCache } from '../../utils/memoryCache';
 
 class LevelController {
   async getAllLevels(_req: Request, res: Response): Promise<Response> {
     try {
+      const cached = memoryCache.get<any>('levels_all');
+      if (cached) {
+        return res.status(200).json({ message: 'Get all levels successfully (cached)', levels: cached });
+      }
       const levels = await levelService.getAllLevels();
+      memoryCache.set('levels_all', levels);
       return res.status(200).json({ message: 'Get all levels successfully', levels });
     } catch (error) {
       const err = error as Error;
@@ -21,6 +27,7 @@ class LevelController {
         return res.status(400).json({ message: 'Level name and level are required' });
       }
       const newLevel = await levelService.createLevel({ levelName, level, image });
+      memoryCache.clear(); // Invalidate cache on update
       return res.status(201).json({ message: 'Create level successfully', level: newLevel });
     } catch (error) {
       const err = error as Error;
@@ -35,6 +42,7 @@ class LevelController {
       if (!updatedLevel) {
         return res.status(404).json({ message: 'Level not found to update' });
       }
+      memoryCache.clear(); // Invalidate cache on update
       return res.status(200).json({ message: 'Update level successfully', level: updatedLevel });
     } catch (error) {
       const err = error as Error;
@@ -49,6 +57,7 @@ class LevelController {
       if (!isDeleted) {
         return res.status(404).json({ message: 'Level not found to delete' });
       }
+      memoryCache.clear(); // Invalidate cache on update
       return res.status(200).json({ message: 'Delete level successfully' });
     } catch (error) {
       const err = error as Error;

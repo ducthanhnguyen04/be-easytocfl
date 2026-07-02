@@ -1,11 +1,17 @@
 import { Request, Response } from 'express';
 import vocabularyService from '../../services/vocabularyService';
 import { CreateVocabularyDto } from '../../types';
+import { memoryCache } from '../../utils/memoryCache';
 
 class VocabularyController {
   async getAllVocabularies(_req: Request, res: Response): Promise<Response> {
     try {
+      const cached = memoryCache.get<any>('vocabularies_all');
+      if (cached) {
+        return res.json({ message: 'Get all vocabularies successfully (cached)', vocabularies: cached });
+      }
       const vocabularies = await vocabularyService.getAllVocabularies();
+      memoryCache.set('vocabularies_all', vocabularies);
       return res.json({ message: 'Get all vocabularies successfully', vocabularies });
     } catch (error) {
       const err = error as Error;
@@ -20,6 +26,7 @@ class VocabularyController {
         return res.status(400).json({ message: 'All are required' });
       }
       const newVocabulary = await vocabularyService.createVocabulary({ vocabulary, meaning, englishMeaning, pinyin, audioUrl, lessonId });
+      memoryCache.clear(); // Invalidate cache on update
       return res.json({ message: 'Create vocabulary successfully', vocabulary: newVocabulary });
     } catch (error) {
       const err = error as Error;
@@ -35,6 +42,7 @@ class VocabularyController {
         return res.status(400).json({ message: 'All are required' });
       }
       const updatedVocabulary = await vocabularyService.updateVocabulary(id, { vocabulary, meaning, englishMeaning, pinyin, audioUrl, lessonId });
+      memoryCache.clear(); // Invalidate cache on update
       return res.json({ message: 'Update vocabulary successfully', vocabulary: updatedVocabulary });
     } catch (error) {
       const err = error as Error;
@@ -49,6 +57,7 @@ class VocabularyController {
       if (!deleted) {
         return res.status(404).json({ message: 'Vocabulary not found' });
       }
+      memoryCache.clear(); // Invalidate cache on update
       return res.json({ message: 'Delete vocabulary successfully' });
     } catch (error) {
       const err = error as Error;
@@ -62,7 +71,13 @@ class VocabularyController {
       if (!lessonId) {
         return res.status(400).json({ message: 'Lesson ID is required' });
       }
+      const cacheKey = `vocabulary_lesson_${lessonId}`;
+      const cached = memoryCache.get<any>(cacheKey);
+      if (cached) {
+        return res.json({ message: 'Get vocabularies by lesson ID successfully (cached)', vocabularies: cached });
+      }
       const vocabularies = await vocabularyService.getVocabularyByLessonId(lessonId);
+      memoryCache.set(cacheKey, vocabularies);
       return res.json({ message: 'Get vocabularies by lesson ID successfully', vocabularies });
     } catch (error) {
       const err = error as Error;
@@ -84,6 +99,7 @@ class VocabularyController {
         defaultLessonId
       );
 
+      memoryCache.clear(); // Invalidate cache on update
       return res.json({
         message: 'Import vocabulary successfully',
         count: importedVocabularies.length,

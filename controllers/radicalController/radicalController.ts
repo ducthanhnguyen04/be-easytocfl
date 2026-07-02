@@ -1,11 +1,17 @@
 import { Request, Response } from 'express';
 import radicalService from '../../services/radicalService';
 import { CreateRadicalDto } from '../../types';
+import { memoryCache } from '../../utils/memoryCache';
 
 class RadicalController {
   async getAllRadicals(_req: Request, res: Response): Promise<Response> {
     try {
+      const cached = memoryCache.get<any>('radicals_all');
+      if (cached) {
+        return res.status(200).json({ message: 'Get all radicals successfully (cached)', radicals: cached });
+      }
       const radicals = await radicalService.getAllRadicals();
+      memoryCache.set('radicals_all', radicals);
       return res.status(200).json({ message: 'Get all radicals successfully', radicals });
     } catch (error) {
       const err = error as Error;
@@ -32,6 +38,7 @@ class RadicalController {
         }
 
         const newRadicals = await radicalService.createRadical(body);
+        memoryCache.clear(); // Invalidate cache on update
         return res.status(201).json({ message: 'Create radicals successfully', radicals: newRadicals });
       } else {
         const { radical, pinyin, meaning, englishMeaning, profoundMeaning, example, stroke } = body as CreateRadicalDto;
@@ -47,6 +54,7 @@ class RadicalController {
           example,
           stroke
         });
+        memoryCache.clear(); // Invalidate cache on update
         return res.status(201).json({ message: 'Create radical successfully', radical: newRadical });
       }
     } catch (error) {
@@ -62,6 +70,7 @@ class RadicalController {
       if (!updatedRadical) {
         return res.status(404).json({ message: 'Radical not found to update' });
       }
+      memoryCache.clear(); // Invalidate cache on update
       return res.status(200).json({ message: 'Update radical successfully', radical: updatedRadical });
     } catch (error) {
       const err = error as Error;
@@ -76,6 +85,7 @@ class RadicalController {
       if (!isDeleted) {
         return res.status(404).json({ message: 'Radical not found to delete' });
       }
+      memoryCache.clear(); // Invalidate cache on update
       return res.status(200).json({ message: 'Delete radical successfully' });
     } catch (error) {
       const err = error as Error;
