@@ -25,6 +25,22 @@ class CommentController {
             return res.status(500).json({ error: err.message });
         }
     }
+    async deleteComment(req: Request, res: Response): Promise<Response> {
+        try {
+            const id = req.params.id as string;
+            if (!id) {
+                return res.status(400).json({ message: 'Comment ID is required' });
+            }
+            const deleted = await commentService.deleteComment(id);
+            if (!deleted) {
+                return res.status(404).json({ message: 'Comment not found' });
+            }
+            return res.status(200).json({ message: 'Delete comment successfully' });
+        } catch (error) {
+            const err = error as Error;
+            return res.status(500).json({ error: err.message });
+        }
+    }
 }
 
 export default new CommentController();
