@@ -18,6 +18,8 @@ import grammarRouter from './routes/grammar';
 import commentRouter from './routes/comment';
 import radicalRouter from './routes/radical';
 import excersiseRouter from './routes/excersise';
+import myVocabularyRouter from './routes/myVocabulary';
+
 
 
 const app = express();
@@ -62,6 +64,7 @@ app.use('/grammars', grammarRouter);
 app.use('/comments', commentRouter);
 app.use('/radicals', radicalRouter);
 app.use('/excersises', excersiseRouter);
+app.use('/my-vocabularies', myVocabularyRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req: Request, res: Response, next: NextFunction) {

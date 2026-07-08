@@ -31,6 +31,10 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
 
     static associate(models: any) {
       // define association here
+      this.hasMany(models.MyVocabularies, {
+        foreignKey: 'userId',
+        as: 'myVocabularies',
+      });
     }
   }
 

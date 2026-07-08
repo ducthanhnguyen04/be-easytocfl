@@ -105,3 +105,16 @@ export interface CreateExcersiseDto {
   grammarId: number;
 }
 
+export interface CreateMyVocabularyListDto {
+  name: string;
+}
+
+export interface CreateMyVocabularyItemDto {
+  vocab: string;
+  pinyin: string;
+  meaning: string;
+  example?: string;
+  exampleMeaning?: string;
+}
+
+
