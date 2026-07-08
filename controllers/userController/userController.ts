@@ -155,6 +155,31 @@ class UserController {
             return res.status(err.status || 500).json({ message: err.message || 'Xóa người dùng thất bại' });
         }
     }
+
+    async streakHeartbeat(req: AuthRequest, res: Response): Promise<Response> {
+        try {
+            const userId = req.user?.id;
+            const { duration, localDate } = req.body as { duration: number; localDate: string };
+
+            if (!userId) {
+                return res.status(401).json({ message: 'Unauthorized' });
+            }
+
+            if (duration === undefined || !localDate) {
+                return res.status(400).json({ message: 'Duration and localDate are required' });
+            }
+
+            const result = await userService.updateStreak(userId, duration, localDate);
+
+            return res.status(200).json({
+                message: 'Streak heartbeat updated successfully',
+                ...result
+            });
+        } catch (error) {
+            const err = error as AppError;
+            return res.status(err.status || 500).json({ message: err.message || 'Internal server error' });
+        }
+    }
 }
 
 export default new UserController();

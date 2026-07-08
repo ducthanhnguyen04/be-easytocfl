@@ -113,6 +113,74 @@ class UserService {
         const deleted = await User.destroy({ where: { id } });
         return deleted > 0;
     }
+
+    async updateStreak(userId: number, duration: number, localDate: string): Promise<any> {
+        const user = await User.findByPk(userId);
+        if (!user) {
+            const error: any = new Error('User not found');
+            error.status = 404;
+            throw error;
+        }
+
+        const getDaysDiff = (d1Str: string, d2Str: string): number => {
+            const [y1, m1, d1] = d1Str.split('-').map(Number);
+            const [y2, m2, d2] = d2Str.split('-').map(Number);
+            const utc1 = Date.UTC(y1, m1 - 1, d1);
+            const utc2 = Date.UTC(y2, m2 - 1, d2);
+            return Math.floor((utc2 - utc1) / (1000 * 60 * 60 * 24));
+        };
+
+        let currentStreak = user.streakCount || 0;
+        let studyTime = user.studyTimeToday || 0;
+        const lastHeartbeat = user.lastHeartbeatDate;
+
+        if (!lastHeartbeat) {
+            user.lastHeartbeatDate = localDate;
+            studyTime = 0;
+        } else if (lastHeartbeat !== localDate) {
+            const diff = getDaysDiff(lastHeartbeat, localDate);
+            if (diff === 1) {
+                if (studyTime < 300) {
+                    currentStreak = 0;
+                }
+            } else if (diff > 1) {
+                currentStreak = 0;
+            }
+            studyTime = 0;
+            user.lastHeartbeatDate = localDate;
+        }
+
+        studyTime += duration;
+        user.studyTimeToday = studyTime;
+
+        if (studyTime >= 300) {
+            const lastStudy = user.lastStudyDate;
+            if (lastStudy !== localDate) {
+                if (lastStudy) {
+                    const diffSinceLastStudy = getDaysDiff(lastStudy, localDate);
+                    if (diffSinceLastStudy === 1) {
+                        currentStreak += 1;
+                    } else {
+                        currentStreak = 1;
+                    }
+                } else {
+                    currentStreak = 1;
+                }
+                user.lastStudyDate = localDate;
+                user.streakCount = currentStreak;
+            }
+        }
+
+        await user.save();
+
+        return {
+            streakCount: user.streakCount,
+            studyTimeToday: user.studyTimeToday,
+            lastStudyDate: user.lastStudyDate,
+            lastHeartbeatDate: user.lastHeartbeatDate,
+            streakCompletedToday: user.lastStudyDate === localDate
+        };
+    }
 }
 
 export default new UserService();

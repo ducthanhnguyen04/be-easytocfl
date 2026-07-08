@@ -12,9 +12,13 @@ interface UserAttributes {
   tokenVersion?: string;
   isPremium?: boolean;
   lastLogin?: Date;
+  streakCount?: number;
+  lastStudyDate?: string;
+  studyTimeToday?: number;
+  lastHeartbeatDate?: string;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'googleId' | 'avatarUrl' | 'tokenVersion' | 'isPremium' | 'lastLogin'> {}
+interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'googleId' | 'avatarUrl' | 'tokenVersion' | 'isPremium' | 'lastLogin' | 'streakCount' | 'lastStudyDate' | 'studyTimeToday' | 'lastHeartbeatDate'> {}
 
 export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
   class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
@@ -28,6 +32,10 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
     declare tokenVersion?: string;
     declare isPremium?: boolean;
     declare lastLogin?: Date;
+    declare streakCount?: number;
+    declare lastStudyDate?: string;
+    declare studyTimeToday?: number;
+    declare lastHeartbeatDate?: string;
 
     static associate(models: any) {
       // define association here
@@ -65,6 +73,22 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
       defaultValue: false,
     },
     lastLogin: dataTypes.DATE,
+    streakCount: {
+      type: dataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    lastStudyDate: {
+      type: dataTypes.STRING,
+      allowNull: true,
+    },
+    studyTimeToday: {
+      type: dataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    lastHeartbeatDate: {
+      type: dataTypes.STRING,
+      allowNull: true,
+    },
   }, {
     sequelize,
     modelName: 'User',

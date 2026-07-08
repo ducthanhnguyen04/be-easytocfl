@@ -9,6 +9,7 @@ const router = Router();
 router.get('/check-premium', authMiddleware, userController.checkIsPremium);
 router.put('/change-profile', authMiddleware, userController.updateProfile.bind(userController));
 router.put('/change-password', authMiddleware, userController.changePassword.bind(userController));
+router.post('/streak-heartbeat', authMiddleware, userController.streakHeartbeat.bind(userController));
 
 // Admin routes
 router.get('/admin/get-all', authMiddleware, checkAdmin, userController.getAllUsers.bind(userController));
