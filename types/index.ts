@@ -117,4 +117,20 @@ export interface CreateMyVocabularyItemDto {
   exampleMeaning?: string;
 }
 
+export interface CreateDialogueLineDto {
+  lineOrder: number;
+  character: string;
+  text: string;
+  pinyin?: string;
+  translation?: string;
+  audioUrl?: string;
+}
+
+export interface CreateDialogueDto {
+  lessonId: number;
+  header?: string;
+  illustrationUrl?: string;
+  lines?: CreateDialogueLineDto[];
+}
+
 

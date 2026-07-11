@@ -26,6 +26,10 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
         foreignKey: 'levelId',
         as: 'level',
       });
+      this.hasOne(models.Dialogues, {
+        foreignKey: 'lessonId',
+        as: 'dialogue',
+      });
     }
   }
 

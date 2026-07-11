@@ -19,6 +19,7 @@ import commentRouter from './routes/comment';
 import radicalRouter from './routes/radical';
 import excersiseRouter from './routes/excersise';
 import myVocabularyRouter from './routes/myVocabulary';
+import dialogueRouter from './routes/dialogue';
 
 
 
@@ -65,6 +66,7 @@ app.use('/comments', commentRouter);
 app.use('/radicals', radicalRouter);
 app.use('/excersises', excersiseRouter);
 app.use('/my-vocabularies', myVocabularyRouter);
+app.use('/dialogues', dialogueRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req: Request, res: Response, next: NextFunction) {
