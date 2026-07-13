@@ -1,5 +1,10 @@
 class MemoryCache {
   private cache = new Map<string, { value: any; expiry: number | null }>();
+  private version: number = Date.now();
+
+  getVersion(): number {
+    return this.version;
+  }
 
   get<T>(key: string): T | null {
     const item = this.cache.get(key);
@@ -19,10 +24,12 @@ class MemoryCache {
 
   delete(key: string): void {
     this.cache.delete(key);
+    this.version = Date.now();
   }
 
   clear(): void {
     this.cache.clear();
+    this.version = Date.now();
   }
 }
 

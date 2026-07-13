@@ -142,9 +142,11 @@ class UserService {
             if (diff === 1) {
                 if (studyTime < 300) {
                     currentStreak = 0;
+                    user.streakCount = 0; // Update user object streak count!
                 }
             } else if (diff > 1) {
                 currentStreak = 0;
+                user.streakCount = 0; // Update user object streak count!
             }
             studyTime = 0;
             user.lastHeartbeatDate = localDate;
