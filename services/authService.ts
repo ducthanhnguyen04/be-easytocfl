@@ -44,6 +44,9 @@ class AuthService {
       avatarUrl: user.avatarUrl as string | undefined,
       isPremium: !!user.isPremium,
       isGoogleLogin: false,
+      streakCount: user.streakCount || 0,
+      studyTimeToday: user.studyTimeToday || 0,
+      lastStudyDate: user.lastStudyDate,
     };
 
     return { user: safeUser, token };
@@ -147,6 +150,9 @@ class AuthService {
       avatarUrl: user.avatarUrl as string | undefined,
       isPremium: !!user.isPremium,
       isGoogleLogin: true,
+      streakCount: user.streakCount || 0,
+      studyTimeToday: user.studyTimeToday || 0,
+      lastStudyDate: user.lastStudyDate,
     };
 
     return { user: safeUser, token };

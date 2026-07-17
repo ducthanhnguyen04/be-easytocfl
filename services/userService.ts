@@ -53,6 +53,9 @@ class UserService {
             role: user.role,
             avatarUrl: user.avatarUrl,
             isPremium: !!user.isPremium,
+            streakCount: user.streakCount || 0,
+            studyTimeToday: user.studyTimeToday || 0,
+            lastStudyDate: user.lastStudyDate,
         };
     }
 

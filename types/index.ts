@@ -23,6 +23,9 @@ export interface SafeUser {
   avatarUrl?: string;
   isPremium?: boolean;
   isGoogleLogin?: boolean;
+  streakCount?: number;
+  studyTimeToday?: number;
+  lastStudyDate?: string | null;
 }
 
 export interface CreateLevelDto {
