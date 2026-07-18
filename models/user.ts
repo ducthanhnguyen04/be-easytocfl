@@ -45,6 +45,10 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
         foreignKey: 'userId',
         as: 'myVocabularies',
       });
+      this.hasMany(models.WritingSheets, {
+        foreignKey: 'userId',
+        as: 'writingSheets',
+      });
     }
   }
 

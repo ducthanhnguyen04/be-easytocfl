@@ -33,6 +33,7 @@ export interface CreateLevelDto {
   levelName: string;
   level: string;
   image?: string;
+  slug?: string;
 }
 
 export interface CreateLessonDto {
@@ -135,6 +136,16 @@ export interface CreateDialogueDto {
   header?: string;
   illustrationUrl?: string;
   lines?: CreateDialogueLineDto[];
+}
+
+export interface CreateWritingSheetDto {
+  title: string;
+}
+
+export interface CreateWritingSheetItemDto {
+  vocab: string;
+  pinyin: string;
+  meaning: string;
 }
 
 
