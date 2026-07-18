@@ -13,12 +13,13 @@ interface UserAttributes {
   isPremium?: boolean;
   lastLogin?: Date;
   streakCount?: number;
+  longestStreak?: number;
   lastStudyDate?: string;
   studyTimeToday?: number;
   lastHeartbeatDate?: string;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'googleId' | 'avatarUrl' | 'tokenVersion' | 'isPremium' | 'lastLogin' | 'streakCount' | 'lastStudyDate' | 'studyTimeToday' | 'lastHeartbeatDate'> {}
+interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'googleId' | 'avatarUrl' | 'tokenVersion' | 'isPremium' | 'lastLogin' | 'streakCount' | 'longestStreak' | 'lastStudyDate' | 'studyTimeToday' | 'lastHeartbeatDate'> {}
 
 export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
   class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
@@ -33,6 +34,7 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
     declare isPremium?: boolean;
     declare lastLogin?: Date;
     declare streakCount?: number;
+    declare longestStreak?: number;
     declare lastStudyDate?: string;
     declare studyTimeToday?: number;
     declare lastHeartbeatDate?: string;
@@ -74,6 +76,10 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
     },
     lastLogin: dataTypes.DATE,
     streakCount: {
+      type: dataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    longestStreak: {
       type: dataTypes.INTEGER,
       defaultValue: 0,
     },

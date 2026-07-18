@@ -24,6 +24,7 @@ export interface SafeUser {
   isPremium?: boolean;
   isGoogleLogin?: boolean;
   streakCount?: number;
+  longestStreak?: number;
   studyTimeToday?: number;
   lastStudyDate?: string | null;
 }

@@ -45,6 +45,7 @@ class AuthService {
       isPremium: !!user.isPremium,
       isGoogleLogin: false,
       streakCount: user.streakCount || 0,
+      longestStreak: Math.max(user.longestStreak || 0, user.streakCount || 0),
       studyTimeToday: user.studyTimeToday || 0,
       lastStudyDate: user.lastStudyDate,
     };
@@ -151,6 +152,7 @@ class AuthService {
       isPremium: !!user.isPremium,
       isGoogleLogin: true,
       streakCount: user.streakCount || 0,
+      longestStreak: Math.max(user.longestStreak || 0, user.streakCount || 0),
       studyTimeToday: user.studyTimeToday || 0,
       lastStudyDate: user.lastStudyDate,
     };

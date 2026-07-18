@@ -35,6 +35,7 @@ router.get('/check', authMiddleware, async (req: AuthRequest, res: Response) => 
         isPremium: !!user.isPremium,
         isGoogleLogin: req.user?.isGoogleLogin,
         streakCount: user.streakCount || 0,
+        longestStreak: Math.max(user.longestStreak || 0, user.streakCount || 0),
         studyTimeToday: user.studyTimeToday || 0,
         lastStudyDate: user.lastStudyDate,
         lastHeartbeatDate: user.lastHeartbeatDate,

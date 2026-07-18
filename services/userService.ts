@@ -54,6 +54,7 @@ class UserService {
             avatarUrl: user.avatarUrl,
             isPremium: !!user.isPremium,
             streakCount: user.streakCount || 0,
+            longestStreak: Math.max(user.longestStreak || 0, user.streakCount || 0),
             studyTimeToday: user.studyTimeToday || 0,
             lastStudyDate: user.lastStudyDate,
         };
@@ -176,10 +177,16 @@ class UserService {
             }
         }
 
+        const currentLongest = user.longestStreak || 0;
+        if (currentStreak > currentLongest) {
+            user.longestStreak = currentStreak;
+        }
+
         await user.save();
 
         return {
             streakCount: user.streakCount,
+            longestStreak: user.longestStreak || 0,
             studyTimeToday: user.studyTimeToday,
             lastStudyDate: user.lastStudyDate,
             lastHeartbeatDate: user.lastHeartbeatDate,
