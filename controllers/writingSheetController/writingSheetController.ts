@@ -17,9 +17,13 @@ class WritingSheetController {
   async createWritingSheet(req: AuthRequest, res: Response): Promise<Response> {
     try {
       const userId = req.user?.id;
-      const { title } = req.body as { title: string };
-      const newSheet = await writingSheetService.createWritingSheet(userId, title);
-      return res.status(201).json({ message: 'Create writing sheet successfully', sheet: newSheet });
+      const { title, findIfExists } = req.body as { title: string; findIfExists?: boolean };
+      const result = await writingSheetService.createWritingSheet(userId, title, findIfExists);
+      return res.status(201).json({
+        message: result.isNew ? 'Create writing sheet successfully' : 'Writing sheet already exists',
+        sheet: result.sheet,
+        isNew: result.isNew
+      });
     } catch (error) {
       const err = error as AppError;
       return res.status(err.status || 500).json({ message: err.message || 'Internal server error' });

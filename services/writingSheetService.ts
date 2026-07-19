@@ -7,7 +7,7 @@ const WritingSheetItem = db.WritingSheetItem;
 class WritingSheetService {
   async getWritingSheets(userId?: number) {
     const whereCondition = userId ? { userId } : {};
-    return await WritingSheets.findAll({
+    const sheets = await WritingSheets.findAll({
       where: whereCondition,
       include: [
         {
@@ -20,13 +20,62 @@ class WritingSheetService {
         [{ model: WritingSheetItem, as: 'items' }, 'id', 'ASC']
       ]
     });
+
+    // Clean up duplicate sheets with identical title if any exist
+    const seenTitles = new Set<string>();
+    const uniqueSheets = [];
+    const duplicateIdsToDelete: number[] = [];
+
+    for (const sheet of sheets) {
+      const normalizedTitle = (sheet.title || '').trim();
+      if (seenTitles.has(normalizedTitle)) {
+        duplicateIdsToDelete.push(sheet.id);
+      } else {
+        seenTitles.add(normalizedTitle);
+        uniqueSheets.push(sheet);
+      }
+    }
+
+    if (duplicateIdsToDelete.length > 0) {
+      WritingSheets.destroy({ where: { id: duplicateIdsToDelete } }).catch(err => {
+        console.error("Error cleaning up duplicate writing sheets:", err);
+      });
+    }
+
+    return uniqueSheets;
   }
 
-  async createWritingSheet(userId?: number, title: string = 'File luyện viết từ vựng') {
-    return await WritingSheets.create({
+  async createWritingSheet(userId?: number, title: string = 'File luyện viết từ vựng', findIfExists: boolean = false) {
+    const normalizedTitle = title.trim();
+    if (findIfExists) {
+      const whereCondition: any = { title: normalizedTitle };
+      if (userId) {
+        whereCondition.userId = userId;
+      }
+      const existing = await WritingSheets.findOne({
+        where: whereCondition,
+        include: [
+          {
+            model: WritingSheetItem,
+            as: 'items',
+          }
+        ],
+        order: [
+          [{ model: WritingSheetItem, as: 'items' }, 'id', 'ASC']
+        ]
+      });
+      if (existing) {
+        return { sheet: existing, isNew: false };
+      }
+    }
+
+    const newSheet = await WritingSheets.create({
       userId: userId || null,
-      title,
+      title: normalizedTitle,
     });
+
+    const sheetWithDetail = await this.getWritingSheetDetail(newSheet.id, userId);
+    return { sheet: sheetWithDetail || newSheet, isNew: true };
   }
 
   async getWritingSheetDetail(sheetId: number, userId?: number) {
