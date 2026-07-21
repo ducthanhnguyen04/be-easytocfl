@@ -1,6 +1,7 @@
 import db from '../models';
 import { SafeUser } from '../types';
 import { comparePassword, hashPassword } from '../utils/auth';
+import { Op } from 'sequelize';
 
 const User = db.User;
 
@@ -174,6 +175,40 @@ class UserService {
                 }
                 user.lastStudyDate = localDate;
                 user.streakCount = currentStreak;
+
+                // Tích hợp tính điểm streak (7 ngày hoặc 30 ngày)
+                if (currentStreak === 7 || currentStreak === 30) {
+                    const activityId = `streak_${currentStreak}`;
+                    const points = currentStreak === 7 ? 100 : 500;
+                    
+                    // Kiểm tra xem đã được cộng điểm cho cột mốc này gần đây chưa (trong vòng 5 ngày với mốc 7, hoặc 25 ngày với mốc 30)
+                    try {
+                        const recentStreakLog = await db.ScoreLogs.findOne({
+                            where: {
+                                userId,
+                                activityType: 'streak',
+                                activityId,
+                                createdAt: {
+                                    [Op.gte]: new Date(Date.now() - (currentStreak === 7 ? 5 : 25) * 24 * 60 * 60 * 1000)
+                                }
+                            }
+                        });
+
+                        if (!recentStreakLog) {
+                            await db.ScoreLogs.create({
+                                userId,
+                                activityType: 'streak',
+                                activityId,
+                                points,
+                                timeSpent: 0
+                            });
+                            user.score = (user.score || 0) + points;
+                            console.log(`Cộng ${points} điểm streak cho user ${user.id} vì đạt streak ${currentStreak} ngày.`);
+                        }
+                    } catch (streakErr) {
+                        console.error("Lỗi khi cộng điểm streak:", streakErr);
+                    }
+                }
             }
         }
 

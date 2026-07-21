@@ -17,9 +17,10 @@ interface UserAttributes {
   lastStudyDate?: string;
   studyTimeToday?: number;
   lastHeartbeatDate?: string;
+  score?: number;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'googleId' | 'avatarUrl' | 'tokenVersion' | 'isPremium' | 'lastLogin' | 'streakCount' | 'longestStreak' | 'lastStudyDate' | 'studyTimeToday' | 'lastHeartbeatDate'> {}
+interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'googleId' | 'avatarUrl' | 'tokenVersion' | 'isPremium' | 'lastLogin' | 'streakCount' | 'longestStreak' | 'lastStudyDate' | 'studyTimeToday' | 'lastHeartbeatDate' | 'score'> {}
 
 export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
   class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
@@ -38,6 +39,7 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
     declare lastStudyDate?: string;
     declare studyTimeToday?: number;
     declare lastHeartbeatDate?: string;
+    declare score?: number;
 
     static associate(models: any) {
       // define association here
@@ -48,6 +50,10 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
       this.hasMany(models.WritingSheets, {
         foreignKey: 'userId',
         as: 'writingSheets',
+      });
+      this.hasMany(models.ScoreLogs, {
+        foreignKey: 'userId',
+        as: 'scoreLogs',
       });
     }
   }
@@ -98,6 +104,10 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
     lastHeartbeatDate: {
       type: dataTypes.STRING,
       allowNull: true,
+    },
+    score: {
+      type: dataTypes.INTEGER,
+      defaultValue: 0,
     },
   }, {
     sequelize,

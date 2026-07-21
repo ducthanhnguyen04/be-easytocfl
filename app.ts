@@ -21,6 +21,7 @@ import excersiseRouter from './routes/excersise';
 import myVocabularyRouter from './routes/myVocabulary';
 import dialogueRouter from './routes/dialogue';
 import writingSheetRouter from './routes/writingSheet';
+import scoreRouter from './routes/score';
 
 
 
@@ -69,6 +70,7 @@ app.use('/excersises', excersiseRouter);
 app.use('/my-vocabularies', myVocabularyRouter);
 app.use('/dialogues', dialogueRouter);
 app.use('/writing-sheets', writingSheetRouter);
+app.use('/score', scoreRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req: Request, res: Response, next: NextFunction) {
