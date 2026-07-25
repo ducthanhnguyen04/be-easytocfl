@@ -63,9 +63,13 @@ class VocabularyService {
       const row = rawData[i];
       const vocabulary = findKey(row, ['vocabulary', 'từ vựng', 'tuvung', 'word', 'chinese']);
       const meaning = findKey(row, ['meaning', 'nghĩa', 'nghia', 'definition']);
-      const englishMeaning = findKey(row, ['englishMeaning', 'nghĩa tiếng anh', 'nghia tieng anh']);
+      const englishMeaning = findKey(row, ['englishmeaning', 'nghĩa tiếng anh', 'nghia tieng anh']);
       const pinyin = findKey(row, ['pinyin', 'phiên âm', 'phienam']);
-      const audioUrl = findKey(row, ['audiourl', 'audio', 'âm thanh', 'amthanh', 'url']);
+
+      // Skip completely empty rows or rows with no content (common at the end of Excel sheets)
+      if (!vocabulary && !meaning && !englishMeaning && !pinyin) {
+        continue;
+      }
 
       const rowLessonIdVal = findKey(row, ['lessonid', 'lesson_id', 'mã bài học', 'mabaihoc', 'lesson']);
       const lessonId = rowLessonIdVal ? parseInt(rowLessonIdVal, 10) : defaultLessonId;
@@ -87,7 +91,6 @@ class VocabularyService {
         pinyin: String(pinyin).trim(),
         meaning: String(meaning).trim(),
         englishMeaning: String(englishMeaning).trim(),
-        audioUrl: audioUrl ? String(audioUrl).trim() : undefined,
         lessonId: lessonId
       });
     }
