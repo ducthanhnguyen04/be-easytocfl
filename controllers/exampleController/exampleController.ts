@@ -55,6 +55,35 @@ class ExampleController {
       return res.status(500).json({ error: err.message });
     }
   }
+
+  async importExamples(req: Request, res: Response): Promise<Response> {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: 'Excel file is required' });
+      }
+
+      const grammarIdStr = (req.body.grammarId || req.query.grammarId) as string | undefined;
+      const defaultGrammarId = grammarIdStr ? parseInt(grammarIdStr, 10) : undefined;
+
+      const vocabIdStr = (req.body.vocabularyId || req.query.vocabularyId) as string | undefined;
+      const defaultVocabId = vocabIdStr ? parseInt(vocabIdStr, 10) : undefined;
+
+      const importedExamples = await exampleService.importExamplesFromBuffer(
+        req.file.buffer,
+        defaultGrammarId,
+        defaultVocabId
+      );
+
+      return res.json({
+        message: 'Import examples successfully',
+        count: importedExamples.length,
+        examples: importedExamples,
+      });
+    } catch (error) {
+      const err = error as Error;
+      return res.status(400).json({ message: err.message });
+    }
+  }
 }
 
 export default new ExampleController();
