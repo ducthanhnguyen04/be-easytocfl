@@ -14,12 +14,16 @@ export function generateLevelSlug(levelName: string, level: string): string {
   } else {
     baseName = baseName
       .toLowerCase()
+      .replace(/đ/g, 'd')
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
   }
   const levelSuffix = level ? level.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') : '';
+  if (levelSuffix && baseName.endsWith(`-${levelSuffix}`)) {
+    return baseName;
+  }
   return levelSuffix ? `${baseName}-${levelSuffix}` : baseName;
 }
 
@@ -40,17 +44,11 @@ class LevelService {
   }
 
   async createLevel(data: CreateLevelDto) {
-    if (!data.slug) {
-      data.slug = generateLevelSlug(data.levelName, data.level);
-    }
     return await Levels.create(data as any);
   }
 
   async updateLevel(id: string, data: Partial<CreateLevelDto>) {
     const oldLevel = await Levels.findByPk(id);
-    if (oldLevel && (!data.slug && (data.levelName || data.level))) {
-      data.slug = generateLevelSlug(data.levelName || oldLevel.levelName, data.level || oldLevel.level);
-    }
     const [updated] = await Levels.update(data, { where: { id } });
     if (updated) {
       if (oldLevel && oldLevel.image && oldLevel.image !== data.image) {

@@ -22,11 +22,11 @@ class LevelController {
 
   async createLevel(req: Request, res: Response): Promise<Response> {
     try {
-      const { levelName, level, image } = req.body as CreateLevelDto;
-      if (!levelName || !level) {
-        return res.status(400).json({ message: 'Level name and level are required' });
+      const { levelName, level, image, description, slug } = req.body as CreateLevelDto;
+      if (!levelName || !level || !slug) {
+        return res.status(400).json({ message: 'Level name, level and slug are required' });
       }
-      const newLevel = await levelService.createLevel({ levelName, level, image });
+      const newLevel = await levelService.createLevel({ levelName, level, image, description, slug });
       memoryCache.clear(); // Invalidate cache on update
       return res.status(201).json({ message: 'Create level successfully', level: newLevel });
     } catch (error) {
