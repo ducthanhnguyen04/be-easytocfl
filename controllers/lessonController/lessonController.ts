@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import LessonService from '../../services/lessonService';
 import { CreateLessonDto, UpdateLessonDto } from '../../types';
+import { memoryCache } from '../../utils/memoryCache';
 
 class LessonController {
   async getAllLessons(_req: Request, res: Response): Promise<Response> {
@@ -20,6 +21,7 @@ class LessonController {
         return res.status(400).json({ message: 'Lesson name, title, slug and level ID are required' });
       }
       const newLesson = await LessonService.createLesson({ lessonName, title, slug, levelId, isPremium });
+      memoryCache.clear(); // Invalidate levels cache
       return res.json({ message: 'Create lesson successfully', lesson: newLesson });
     } catch (error) {
       const err = error as Error;
@@ -35,6 +37,7 @@ class LessonController {
       if (!lesson) {
         return res.status(404).json({ message: 'Lesson not found' });
       }
+      memoryCache.clear(); // Invalidate levels cache
       return res.json({ message: 'Update lesson successfully', lesson });
     } catch (error) {
       const err = error as Error;
@@ -49,12 +52,14 @@ class LessonController {
       if (!deleted) {
         return res.status(404).json({ message: 'Lesson not found' });
       }
+      memoryCache.clear(); // Invalidate levels cache
       return res.json({ message: 'Delete lesson successfully' });
     } catch (error) {
       const err = error as Error;
       return res.status(500).json({ error: err.message });
     }
   }
+
 
   async getLessonByLevelId(req: Request, res: Response): Promise<Response> {
     try {
