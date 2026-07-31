@@ -57,8 +57,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/', (req: Request, res: Response) => {
+  res.status(200).json({ message: "Welcome to EasyToCFL API is running! 🚀" });
+});
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/levels', levelRouter);
 app.use('/lessons', lessonRouter);
@@ -80,14 +83,22 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
 });
 
 // error handler
-app.use(function (err: any, req: Request, res: Response, next: NextFunction) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+// app.use(function (err: any, req: Request, res: Response, next: NextFunction) {
+//   // set locals, only providing error in development
+//   res.locals.message = err.message;
+//   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
+//   // render the error page
+//   res.status(err.status || 500);
+//   res.render('error');
+// });
+// error handler
+app.use(function (err: any, req: Request, res: Response, next: NextFunction) {
   res.status(err.status || 500);
-  res.render('error');
+  res.json({
+    message: err.message,
+    error: req.app.get('env') === 'development' ? err : {}
+  });
 });
 
 export default app;
