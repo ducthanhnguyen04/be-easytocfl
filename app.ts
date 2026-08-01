@@ -61,7 +61,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req: Request, res: Response) => {
   res.status(200).json({ message: "Welcome to EasyToCFL API is running! 🚀" });
 });
-// app.use('/', indexRouter);
+app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/levels', levelRouter);
