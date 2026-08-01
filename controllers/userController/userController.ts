@@ -56,10 +56,11 @@ class UserController {
 
             const token = jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: '7d' });
 
+            const isProduction = process.env.NODE_ENV === 'production';
             res.cookie('token', token, {
                 httpOnly: true,
-                secure: false,
-                sameSite: 'lax',
+                secure: isProduction,
+                sameSite: isProduction ? 'none' : 'lax',
                 maxAge: 1000 * 60 * 60 * 24 * 7,
                 path: '/',
             });

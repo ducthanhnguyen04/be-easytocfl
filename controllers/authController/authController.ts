@@ -16,10 +16,11 @@ class AuthController {
 
       const { user, token } = await AuthService.loginLocal(email, password);
 
+      const isProduction = process.env.NODE_ENV === 'production';
       res.cookie('token', token, {
         httpOnly: true,
-        secure: false,
-        sameSite: 'lax',
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
         maxAge: 1000 * 60 * 60 * 24 * 7,
         path: '/',
       });
@@ -42,10 +43,11 @@ class AuthController {
 
       const { user, token } = await AuthService.loginGoogle(credential);
 
+      const isProduction = process.env.NODE_ENV === 'production';
       res.cookie('token', token, {
         httpOnly: true,
-        secure: false,
-        sameSite: 'lax',
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
         maxAge: 1000 * 60 * 60 * 24 * 7,
         path: '/',
       });
@@ -60,10 +62,12 @@ class AuthController {
 
 
   async logout(_req: AuthRequest, res: Response): Promise<Response> {
+    const isProduction = process.env.NODE_ENV === 'production';
     res.clearCookie('token', {
       httpOnly: true,
-      secure: false,
-      sameSite: 'strict',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
     });
     return res.json({ message: 'Logout successfully!' });
   }
