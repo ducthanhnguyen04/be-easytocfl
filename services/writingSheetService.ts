@@ -45,7 +45,7 @@ class WritingSheetService {
     return uniqueSheets;
   }
 
-  async createWritingSheet(userId?: number, title: string = 'File luyện viết từ vựng', findIfExists: boolean = false) {
+  async createWritingSheet(userId?: number, title: string = 'File luyện viết từ vựng', findIfExists: boolean = false, items?: CreateWritingSheetItemDto[]) {
     const normalizedTitle = title.trim();
     if (findIfExists) {
       const whereCondition: any = { title: normalizedTitle };
@@ -73,6 +73,16 @@ class WritingSheetService {
       userId: userId || null,
       title: normalizedTitle,
     });
+
+    if (items && items.length > 0) {
+      const itemsToCreate = items.map(item => ({
+        writingSheetId: newSheet.id,
+        vocab: item.vocab,
+        pinyin: item.pinyin,
+        meaning: item.meaning,
+      }));
+      await WritingSheetItem.bulkCreate(itemsToCreate);
+    }
 
     const sheetWithDetail = await this.getWritingSheetDetail(newSheet.id, userId);
     return { sheet: sheetWithDetail || newSheet, isNew: true };
@@ -125,6 +135,20 @@ class WritingSheetService {
       pinyin: data.pinyin,
       meaning: data.meaning,
     });
+  }
+
+  async addWritingSheetItems(sheetId: number, items: CreateWritingSheetItemDto[], userId?: number) {
+    const sheet = await this.getWritingSheetDetail(sheetId, userId);
+    if (!sheet) {
+      throw new Error('Writing sheet not found');
+    }
+    const itemsToCreate = items.map(item => ({
+      writingSheetId: sheetId,
+      vocab: item.vocab,
+      pinyin: item.pinyin,
+      meaning: item.meaning,
+    }));
+    return await WritingSheetItem.bulkCreate(itemsToCreate);
   }
 
   async updateWritingSheetItem(itemId: number, data: Partial<CreateWritingSheetItemDto>, _userId?: number) {

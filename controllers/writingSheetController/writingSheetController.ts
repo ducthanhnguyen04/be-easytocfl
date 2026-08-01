@@ -17,8 +17,8 @@ class WritingSheetController {
   async createWritingSheet(req: AuthRequest, res: Response): Promise<Response> {
     try {
       const userId = req.user?.id;
-      const { title, findIfExists } = req.body as { title: string; findIfExists?: boolean };
-      const result = await writingSheetService.createWritingSheet(userId, title, findIfExists);
+      const { title, findIfExists, items } = req.body as { title: string; findIfExists?: boolean; items?: CreateWritingSheetItemDto[] };
+      const result = await writingSheetService.createWritingSheet(userId, title, findIfExists, items);
       return res.status(201).json({
         message: result.isNew ? 'Create writing sheet successfully' : 'Writing sheet already exists',
         sheet: result.sheet,
@@ -80,14 +80,20 @@ class WritingSheetController {
     try {
       const userId = req.user?.id;
       const sheetId = parseInt(req.params.sheetId as string, 10);
-      const { vocab, pinyin, meaning } = req.body as CreateWritingSheetItemDto;
 
-      if (!vocab || !pinyin || !meaning) {
-        return res.status(400).json({ message: 'Vocab, pinyin, and meaning are required' });
+      if (Array.isArray(req.body)) {
+        const items = await writingSheetService.addWritingSheetItems(sheetId, req.body, userId);
+        return res.status(201).json({ message: 'Add items successfully', items });
+      } else {
+        const { vocab, pinyin, meaning } = req.body as CreateWritingSheetItemDto;
+
+        if (!vocab || !pinyin || !meaning) {
+          return res.status(400).json({ message: 'Vocab, pinyin, and meaning are required' });
+        }
+
+        const item = await writingSheetService.addWritingSheetItem(sheetId, { vocab, pinyin, meaning }, userId);
+        return res.status(201).json({ message: 'Add item successfully', item });
       }
-
-      const item = await writingSheetService.addWritingSheetItem(sheetId, { vocab, pinyin, meaning }, userId);
-      return res.status(201).json({ message: 'Add item successfully', item });
     } catch (error) {
       const err = error as AppError;
       return res.status(err.status || 500).json({ message: err.message || 'Internal server error' });
