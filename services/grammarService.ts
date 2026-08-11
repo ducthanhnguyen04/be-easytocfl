@@ -6,7 +6,7 @@ const Grammars = db.Grammars;
 class GrammarService {
   async getAllGrammars() {
     return await Grammars.findAll({
-      order: [['id', 'ASC']]
+      order: [['createdAt', 'ASC']]
     });
   }
 
@@ -24,7 +24,7 @@ class GrammarService {
         },
       ],
       order: [
-        ['id', 'ASC'],
+        ['createdAt', 'ASC'],
         [{ model: db.Examples, as: 'examples' }, 'id', 'ASC'],
         [{ model: db.Excersises, as: 'excersises' }, 'id', 'ASC']
       ]
