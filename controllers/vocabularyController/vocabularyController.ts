@@ -21,16 +21,53 @@ class VocabularyController {
 
   async createVocabulary(req: Request, res: Response): Promise<Response> {
     try {
-      const { vocabulary, meaning, englishMeaning, pinyin, audioUrl, lessonId } = req.body as CreateVocabularyDto;
+      const { vocabulary, meaning, englishMeaning, pinyin, audioUrl, lessonId, examples } = req.body as CreateVocabularyDto;
       if (!vocabulary || !meaning || !englishMeaning || !pinyin) {
-        return res.status(400).json({ message: 'All are required' });
+        return res.status(400).json({ message: 'All fields (vocabulary, meaning, englishMeaning, pinyin) are required' });
       }
-      const newVocabulary = await vocabularyService.createVocabulary({ vocabulary, meaning, englishMeaning, pinyin, audioUrl, lessonId });
+      const newVocabulary = await vocabularyService.createVocabulary({ vocabulary, meaning, englishMeaning, pinyin, audioUrl, lessonId, examples });
       memoryCache.clear(); // Invalidate cache on update
       return res.json({ message: 'Create vocabulary successfully', vocabulary: newVocabulary });
     } catch (error) {
       const err = error as Error;
       return res.status(500).json({ error: err.message });
+    }
+  }
+
+  async createBulkVocabularies(req: Request, res: Response): Promise<Response> {
+    try {
+      let items = req.body;
+      if (!Array.isArray(items)) {
+        if (req.body && Array.isArray(req.body.items)) {
+          items = req.body.items;
+        } else if (req.body && Array.isArray(req.body.vocabularies)) {
+          items = req.body.vocabularies;
+        } else if (req.body && Array.isArray(req.body.data)) {
+          items = req.body.data;
+        }
+      }
+
+      if (!Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({
+          message: 'Dữ liệu không hợp lệ. Vui lòng truyền JSON dạng danh sách [ ... ] hoặc { items: [ ... ] }'
+        });
+      }
+
+      const defaultLessonIdStr = (req.body.lessonId || req.query.lessonId) as string | undefined;
+      const defaultLessonId = defaultLessonIdStr ? parseInt(defaultLessonIdStr, 10) : undefined;
+
+      const result = await vocabularyService.createBulkVocabularies(items, defaultLessonId);
+      memoryCache.clear(); // Invalidate cache on update
+
+      return res.json({
+        message: 'Tạo hàng loạt từ vựng thành công!',
+        count: result.vocabularies.length,
+        examplesCount: result.examplesCount,
+        vocabularies: result.vocabularies
+      });
+    } catch (error) {
+      const err = error as Error;
+      return res.status(400).json({ message: err.message });
     }
   }
 

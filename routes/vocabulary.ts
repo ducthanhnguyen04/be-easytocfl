@@ -9,6 +9,8 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 router.get('/get-all', VocabularyController.getAllVocabularies.bind(VocabularyController));
 router.post('/create', VocabularyController.createVocabulary.bind(VocabularyController));
+router.post('/create-bulk', VocabularyController.createBulkVocabularies.bind(VocabularyController));
+router.post('/bulk-create', VocabularyController.createBulkVocabularies.bind(VocabularyController));
 router.put('/update/:id', VocabularyController.updateVocabulary.bind(VocabularyController));
 router.delete('/delete/:id', VocabularyController.deleteVocabulary.bind(VocabularyController));
 router.get('/get-vocabulary-by-lesson-id', authMiddleware, requirePremium, VocabularyController.getVocabularyByLessonId.bind(VocabularyController));

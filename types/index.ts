@@ -60,6 +60,12 @@ export interface CreateVocabularyDto {
   pinyin: string;
   audioUrl?: string;
   lessonId: number;
+  examples?: Array<{
+    example: string;
+    meaning?: string;
+    pinyin?: string;
+    audioUrl?: string;
+  }>;
 }
 
 export interface CreateExampleDto {

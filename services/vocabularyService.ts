@@ -13,7 +13,114 @@ class VocabularyService {
   }
 
   async createVocabulary(data: CreateVocabularyDto) {
-    return await Vocabularies.create(data);
+    const { examples, ...vocabData } = data;
+    if (!examples || !Array.isArray(examples) || examples.length === 0) {
+      return await Vocabularies.create(vocabData);
+    }
+
+    const transaction = await db.sequelize.transaction();
+    try {
+      const newVocabulary = await Vocabularies.create(vocabData, { transaction });
+      const exampleRecords = examples
+        .filter(ex => ex.example && ex.example.trim())
+        .map(ex => ({
+          example: ex.example.trim(),
+          meaning: ex.meaning ? ex.meaning.trim() : '',
+          pinyin: ex.pinyin ? ex.pinyin.trim() : '',
+          audioUrl: ex.audioUrl ? ex.audioUrl.trim() : null,
+          vocabularyId: newVocabulary.id,
+          grammarId: null
+        }));
+
+      let createdExamples: any[] = [];
+      if (exampleRecords.length > 0) {
+        createdExamples = await Examples.bulkCreate(exampleRecords, { transaction });
+      }
+
+      await transaction.commit();
+      return {
+        ...newVocabulary.toJSON(),
+        examples: createdExamples
+      };
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
+  }
+
+  async createBulkVocabularies(items: CreateVocabularyDto[], defaultLessonId?: number) {
+    if (!Array.isArray(items) || items.length === 0) {
+      throw new Error('Danh sách từ vựng không hợp lệ hoặc rỗng');
+    }
+
+    const lessons = await db.Lessons.findAll({ attributes: ['id'] });
+    const validLessonIds = new Set(lessons.map((l: any) => l.id));
+
+    const transaction = await db.sequelize.transaction();
+    try {
+      const createdVocabularies: any[] = [];
+      const createdExamplesList: any[] = [];
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const vocabulary = item.vocabulary?.trim();
+        const meaning = item.meaning?.trim();
+        const englishMeaning = item.englishMeaning?.trim();
+        const pinyin = item.pinyin?.trim();
+        const lessonId = item.lessonId ? Number(item.lessonId) : defaultLessonId;
+
+        if (!vocabulary || !meaning || !englishMeaning || !pinyin) {
+          throw new Error(`Mục thứ ${i + 1} (${vocabulary || 'Chưa có từ'}): Thiếu thông tin bắt buộc (vocabulary, meaning, englishMeaning, pinyin)`);
+        }
+
+        if (!lessonId || isNaN(lessonId)) {
+          throw new Error(`Mục thứ ${i + 1} (${vocabulary}): Thiếu Mã bài học (lessonId)`);
+        }
+
+        if (!validLessonIds.has(lessonId)) {
+          throw new Error(`Mục thứ ${i + 1} (${vocabulary}): Mã bài học ${lessonId} không tồn tại`);
+        }
+
+        const vocabRecord = await Vocabularies.create({
+          vocabulary,
+          meaning,
+          englishMeaning,
+          pinyin,
+          audioUrl: item.audioUrl || '',
+          lessonId
+        }, { transaction });
+
+        createdVocabularies.push(vocabRecord);
+
+        if (Array.isArray(item.examples) && item.examples.length > 0) {
+          for (const ex of item.examples) {
+            if (ex.example && ex.example.trim()) {
+              createdExamplesList.push({
+                example: ex.example.trim(),
+                meaning: ex.meaning ? ex.meaning.trim() : '',
+                pinyin: ex.pinyin ? ex.pinyin.trim() : '',
+                audioUrl: ex.audioUrl ? ex.audioUrl.trim() : null,
+                vocabularyId: vocabRecord.id,
+                grammarId: null
+              });
+            }
+          }
+        }
+      }
+
+      if (createdExamplesList.length > 0) {
+        await Examples.bulkCreate(createdExamplesList, { transaction });
+      }
+
+      await transaction.commit();
+      return {
+        vocabularies: createdVocabularies,
+        examplesCount: createdExamplesList.length
+      };
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
   }
 
   async updateVocabulary(id: string, data: Partial<CreateVocabularyDto>) {
