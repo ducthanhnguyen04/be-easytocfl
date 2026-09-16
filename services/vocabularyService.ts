@@ -3,6 +3,7 @@ import { CreateVocabularyDto } from '../types';
 import * as XLSX from 'xlsx';
 
 const Vocabularies = db.Vocabularies;
+const Examples = db.Examples;
 
 class VocabularyService {
   async getAllVocabularies() {
@@ -61,9 +62,9 @@ class VocabularyService {
 
     for (let i = 0; i < rawData.length; i++) {
       const row = rawData[i];
-      const vocabulary = findKey(row, ['vocabulary', 'từ vựng', 'tuvung', 'word', 'chinese']);
-      const meaning = findKey(row, ['meaning', 'nghĩa', 'nghia', 'definition']);
-      const englishMeaning = findKey(row, ['englishmeaning', 'nghĩa tiếng anh', 'nghia tieng anh']);
+      const vocabulary = findKey(row, ['vocabulary', 'từ vựng', 'tuvung', 'word', 'chinese', 'chữ hán']);
+      const meaning = findKey(row, ['meaning', 'nghĩa', 'nghia', 'definition', 'nghĩa tiếng việt', 'nghiatiengviet']);
+      const englishMeaning = findKey(row, ['englishmeaning', 'nghĩa tiếng anh', 'nghia tieng anh', 'english']);
       const pinyin = findKey(row, ['pinyin', 'phiên âm', 'phienam']);
 
       // Skip completely empty rows or rows with no content (common at the end of Excel sheets)
@@ -86,20 +87,93 @@ class VocabularyService {
         throw new Error(`Row ${i + 2}: Lesson ID ${lessonId} does not exist in the database`);
       }
 
+      // Extract examples if present in this row
+      const examples: { example: string; meaning: string; pinyin: string }[] = [];
+
+      const exVal = findKey(row, ['example', 'ví dụ', 'vidu', 'câu ví dụ', 'cau vi du', 'example_sentence', 'examplesentence', 'example text']);
+      const exMeaningVal = findKey(row, ['examplemeaning', 'example_meaning', 'nghĩa ví dụ', 'nghia vidu', 'dịch ví dụ', 'dich vidu', 'nghĩa của ví dụ', 'example translation']);
+      const exPinyinVal = findKey(row, ['examplepinyin', 'example_pinyin', 'pinyin ví dụ', 'pinyin vidu', 'phiên âm ví dụ', 'phien am vi du']);
+
+      if (exVal && String(exVal).trim()) {
+        const exLines = String(exVal).split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+        const meaningLines = exMeaningVal ? String(exMeaningVal).split(/\r?\n/).map(s => s.trim()) : [];
+        const pinyinLines = exPinyinVal ? String(exPinyinVal).split(/\r?\n/).map(s => s.trim()) : [];
+
+        if (exLines.length > 1 && (meaningLines.length === exLines.length || meaningLines.length === 0)) {
+          exLines.forEach((line, idx) => {
+            examples.push({
+              example: line,
+              meaning: meaningLines[idx] || '',
+              pinyin: pinyinLines[idx] || ''
+            });
+          });
+        } else {
+          examples.push({
+            example: String(exVal).trim(),
+            meaning: exMeaningVal ? String(exMeaningVal).trim() : '',
+            pinyin: exPinyinVal ? String(exPinyinVal).trim() : ''
+          });
+        }
+      }
+
+      // Also check numbered example fields: example1, ví dụ 1, etc.
+      for (let num = 1; num <= 5; num++) {
+        const numExVal = findKey(row, [`example${num}`, `example_${num}`, `ví dụ ${num}`, `vidu${num}`, `vidu ${num}`, `câu ví dụ ${num}`]);
+        const numExMeaningVal = findKey(row, [`examplemeaning${num}`, `example_meaning_${num}`, `nghĩa ví dụ ${num}`, `nghia vidu ${num}`, `dịch ví dụ ${num}`]);
+        const numExPinyinVal = findKey(row, [`examplepinyin${num}`, `example_pinyin_${num}`, `pinyin ví dụ ${num}`, `phien am vi du ${num}`]);
+
+        if (numExVal && String(numExVal).trim()) {
+          examples.push({
+            example: String(numExVal).trim(),
+            meaning: numExMeaningVal ? String(numExMeaningVal).trim() : '',
+            pinyin: numExPinyinVal ? String(numExPinyinVal).trim() : ''
+          });
+        }
+      }
+
       parsedRows.push({
-        vocabulary: String(vocabulary).trim(),
-        pinyin: String(pinyin).trim(),
-        meaning: String(meaning).trim(),
-        englishMeaning: String(englishMeaning).trim(),
-        lessonId: lessonId
+        vocabData: {
+          vocabulary: String(vocabulary).trim(),
+          pinyin: String(pinyin).trim(),
+          meaning: String(meaning).trim(),
+          englishMeaning: String(englishMeaning).trim(),
+          lessonId: lessonId
+        },
+        examples
       });
     }
 
     const transaction = await db.sequelize.transaction();
     try {
-      const created = await Vocabularies.bulkCreate(parsedRows, { transaction });
+      const createdVocabularies: any[] = [];
+      const createdExamplesList: any[] = [];
+
+      for (const item of parsedRows) {
+        const vocabRecord = await Vocabularies.create(item.vocabData, { transaction });
+        createdVocabularies.push(vocabRecord);
+
+        if (item.examples && item.examples.length > 0) {
+          for (const ex of item.examples) {
+            createdExamplesList.push({
+              example: ex.example,
+              meaning: ex.meaning || '',
+              pinyin: ex.pinyin || '',
+              vocabularyId: vocabRecord.id,
+              grammarId: null
+            });
+          }
+        }
+      }
+
+      if (createdExamplesList.length > 0) {
+        await Examples.bulkCreate(createdExamplesList, { transaction });
+      }
+
       await transaction.commit();
-      return created;
+      return {
+        vocabularies: createdVocabularies,
+        examplesCount: createdExamplesList.length
+      };
     } catch (error) {
       await transaction.rollback();
       throw error;

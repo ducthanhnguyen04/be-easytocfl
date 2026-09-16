@@ -94,7 +94,7 @@ class VocabularyController {
       const lessonIdStr = (req.body.lessonId || req.query.lessonId) as string | undefined;
       const defaultLessonId = lessonIdStr ? parseInt(lessonIdStr, 10) : undefined;
 
-      const importedVocabularies = await vocabularyService.importVocabulariesFromBuffer(
+      const result = await vocabularyService.importVocabulariesFromBuffer(
         req.file.buffer,
         defaultLessonId
       );
@@ -102,8 +102,9 @@ class VocabularyController {
       memoryCache.clear(); // Invalidate cache on update
       return res.json({
         message: 'Import vocabulary successfully',
-        count: importedVocabularies.length,
-        vocabularies: importedVocabularies,
+        count: result.vocabularies.length,
+        examplesCount: result.examplesCount,
+        vocabularies: result.vocabularies,
       });
     } catch (error) {
       const err = error as Error;
