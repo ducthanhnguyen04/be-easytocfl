@@ -57,12 +57,15 @@ export interface CreateVocabularyDto {
   vocabulary: string;
   meaning: string;
   englishMeaning: string;
+  indonesianMeaning?: string;
   pinyin: string;
   audioUrl?: string;
   lessonId: number;
   examples?: Array<{
     example: string;
     meaning?: string;
+    englishMeaning?: string;
+    indonesianMeaning?: string;
     pinyin?: string;
     audioUrl?: string;
   }>;
@@ -71,6 +74,8 @@ export interface CreateVocabularyDto {
 export interface CreateExampleDto {
   example: string;
   meaning: string;
+  englishMeaning?: string;
+  indonesianMeaning?: string;
   pinyin: string;
   audioUrl?: string;
   vocabularyId?: number;

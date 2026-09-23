@@ -6,12 +6,13 @@ interface VocabularyAttributes {
   vocabulary: string;
   meaning: string;
   englishMeaning: string;
+  indonesianMeaning?: string;
   pinyin: string;
   audioUrl?: string;
   lessonId: number;
 }
 
-interface VocabularyCreationAttributes extends Optional<VocabularyAttributes, 'id' | 'audioUrl'> { }
+interface VocabularyCreationAttributes extends Optional<VocabularyAttributes, 'id' | 'audioUrl' | 'indonesianMeaning'> { }
 
 export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
   class Vocabularies extends Model<VocabularyAttributes, VocabularyCreationAttributes> implements VocabularyAttributes {
@@ -19,6 +20,7 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
     declare vocabulary: string;
     declare meaning: string;
     declare englishMeaning: string;
+    declare indonesianMeaning?: string;
     declare pinyin: string;
     declare audioUrl?: string;
     declare lessonId: number;
@@ -48,6 +50,10 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes) => {
     englishMeaning: {
       type: dataTypes.TEXT,
       allowNull: false,
+    },
+    indonesianMeaning: {
+      type: dataTypes.TEXT,
+      allowNull: true,
     },
     pinyin: {
       type: dataTypes.STRING,

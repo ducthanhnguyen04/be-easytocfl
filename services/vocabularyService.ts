@@ -26,6 +26,8 @@ class VocabularyService {
         .map(ex => ({
           example: ex.example.trim(),
           meaning: ex.meaning ? ex.meaning.trim() : '',
+          englishMeaning: ex.englishMeaning ? ex.englishMeaning.trim() : '',
+          indonesianMeaning: ex.indonesianMeaning ? ex.indonesianMeaning.trim() : '',
           pinyin: ex.pinyin ? ex.pinyin.trim() : '',
           audioUrl: ex.audioUrl ? ex.audioUrl.trim() : null,
           vocabularyId: newVocabulary.id,
@@ -66,6 +68,7 @@ class VocabularyService {
         const vocabulary = item.vocabulary?.trim();
         const meaning = item.meaning?.trim();
         const englishMeaning = item.englishMeaning?.trim();
+        const indonesianMeaning = item.indonesianMeaning?.trim() || '';
         const pinyin = item.pinyin?.trim();
         const lessonId = item.lessonId ? Number(item.lessonId) : defaultLessonId;
 
@@ -85,6 +88,7 @@ class VocabularyService {
           vocabulary,
           meaning,
           englishMeaning,
+          indonesianMeaning,
           pinyin,
           audioUrl: item.audioUrl || '',
           lessonId
@@ -98,6 +102,8 @@ class VocabularyService {
               createdExamplesList.push({
                 example: ex.example.trim(),
                 meaning: ex.meaning ? ex.meaning.trim() : '',
+                englishMeaning: ex.englishMeaning ? ex.englishMeaning.trim() : '',
+                indonesianMeaning: ex.indonesianMeaning ? ex.indonesianMeaning.trim() : '',
                 pinyin: ex.pinyin ? ex.pinyin.trim() : '',
                 audioUrl: ex.audioUrl ? ex.audioUrl.trim() : null,
                 vocabularyId: vocabRecord.id,
@@ -172,6 +178,7 @@ class VocabularyService {
       const vocabulary = findKey(row, ['vocabulary', 'từ vựng', 'tuvung', 'word', 'chinese', 'chữ hán']);
       const meaning = findKey(row, ['meaning', 'nghĩa', 'nghia', 'definition', 'nghĩa tiếng việt', 'nghiatiengviet']);
       const englishMeaning = findKey(row, ['englishmeaning', 'nghĩa tiếng anh', 'nghia tieng anh', 'english']);
+      const indonesianMeaning = findKey(row, ['indonesianmeaning', 'nghĩa tiếng indonesia', 'nghia tieng indonesia', 'indonesian', 'bahasa indonesia']);
       const pinyin = findKey(row, ['pinyin', 'phiên âm', 'phienam']);
 
       // Skip completely empty rows or rows with no content (common at the end of Excel sheets)
@@ -244,6 +251,7 @@ class VocabularyService {
           pinyin: String(pinyin).trim(),
           meaning: String(meaning).trim(),
           englishMeaning: String(englishMeaning).trim(),
+          indonesianMeaning: indonesianMeaning ? String(indonesianMeaning).trim() : '',
           lessonId: lessonId
         },
         examples
