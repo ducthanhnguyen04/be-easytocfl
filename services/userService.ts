@@ -212,6 +212,22 @@ class UserService {
             }
         }
 
+        // Tích điểm thời gian online (+2 XP cho mỗi 30s active online)
+        const validDuration = Math.min(Math.max(duration || 30, 1), 120);
+        const onlinePointsEarned = Math.max(1, Math.round((validDuration / 30) * 2));
+        try {
+            await db.ScoreLogs.create({
+                userId,
+                activityType: 'online_time',
+                activityId: 'online_session',
+                points: onlinePointsEarned,
+                timeSpent: validDuration
+            });
+            user.score = (user.score || 0) + onlinePointsEarned;
+        } catch (onlineErr) {
+            console.error("Lỗi khi cộng điểm online time:", onlineErr);
+        }
+
         const currentLongest = user.longestStreak || 0;
         if (currentStreak > currentLongest) {
             user.longestStreak = currentStreak;
@@ -225,7 +241,9 @@ class UserService {
             studyTimeToday: user.studyTimeToday,
             lastStudyDate: user.lastStudyDate,
             lastHeartbeatDate: user.lastHeartbeatDate,
-            streakCompletedToday: user.lastStudyDate === localDate
+            streakCompletedToday: user.lastStudyDate === localDate,
+            score: user.score || 0,
+            onlinePointsEarned
         };
     }
 }

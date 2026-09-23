@@ -7,6 +7,7 @@ const router = Router();
 router.post('/quiz', authMiddleware, scoreController.submitQuiz.bind(scoreController));
 router.post('/lesson', authMiddleware, scoreController.completeLesson.bind(scoreController));
 router.post('/exam', authMiddleware, scoreController.submitExam.bind(scoreController));
+router.post('/online-time', authMiddleware, scoreController.recordOnlineTime.bind(scoreController));
 router.get('/leaderboard', scoreController.getLeaderboard.bind(scoreController));
 
 export default router;

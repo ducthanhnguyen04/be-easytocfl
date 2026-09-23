@@ -86,6 +86,25 @@ class ScoreController {
     }
   }
 
+  async recordOnlineTime(req: AuthRequest, res: Response): Promise<Response> {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      const { duration } = req.body as { duration?: number };
+      const result = await scoreService.recordOnlineTime(userId, duration || 30);
+      return res.status(200).json({
+        message: 'Ghi nhận thời gian online thành công!',
+        data: result
+      });
+    } catch (error) {
+      const err = error as AppError;
+      return res.status(err.status || 500).json({ message: err.message || 'Đã có lỗi xảy ra.' });
+    }
+  }
+
   async getLeaderboard(req: AuthRequest, res: Response): Promise<Response> {
     try {
       const result = await scoreService.getLeaderboard();

@@ -146,21 +146,8 @@ class ScoreService {
     if (existingLog) {
       pointsEarned = 10; // 20% of 50
 
-      // Anti-cheat: prevent spamming repeat completion of same lesson (minimum 1 minute between repeat completions)
-      const lastRepeatLog = await ScoreLogs.findOne({
-        where: {
-          userId,
-          activityType: 'lesson',
-          activityId
-        },
-        order: [['createdAt', 'DESC']]
-      });
-
-      if (lastRepeatLog && (Date.now() - new Date(lastRepeatLog.createdAt).getTime() < 60000)) {
-        const error: any = new Error('Bạn vừa hoàn thành bài học này! Vui lòng đợi 1 phút trước khi học lại.');
-        error.status = 400;
-        throw error;
-      }
+      // Luyện lại flashcard / bài học: cộng 10 XP per repeat.
+      // Anti-spam 5 giây đã được xử lý bởi checkCooldown(userId).
     }
 
     // 5. Update user score and save log
@@ -261,6 +248,36 @@ class ScoreService {
       correctCount,
       totalCount: questionIds.length,
       scorePercent
+    };
+  }
+
+  async recordOnlineTime(userId: number, duration: number) {
+    const validDuration = Math.min(Math.max(duration || 30, 1), 120);
+    const pointsEarned = Math.max(1, Math.round((validDuration / 30) * 2));
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      const error: any = new Error('Không tìm thấy người dùng.');
+      error.status = 404;
+      throw error;
+    }
+
+    await db.sequelize.transaction(async (t: any) => {
+      await ScoreLogs.create({
+        userId,
+        activityType: 'online_time',
+        activityId: 'online_session',
+        points: pointsEarned,
+        timeSpent: validDuration
+      }, { transaction: t });
+
+      user.score = (user.score || 0) + pointsEarned;
+      await user.save({ transaction: t });
+    });
+
+    return {
+      pointsEarned,
+      totalScore: user.score
     };
   }
 
